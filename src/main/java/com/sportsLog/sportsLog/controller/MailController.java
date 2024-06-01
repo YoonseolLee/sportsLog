@@ -29,7 +29,7 @@ public class MailController {
 
     @PostMapping("/mailauthCheck")
     public ResponseEntity<Void> authCheck(@RequestBody @Valid EmailCheckDto emailCheckDto) {
-        Boolean checked = mailService.CheckAuthNum(emailCheckDto.getEmail(), emailCheckDto.getAuthNum());
+        Boolean checked = mailService.checkAuthNum(emailCheckDto.getEmail(), emailCheckDto.getAuthNum());
         if (checked) {
             log.info("메일 인증 성공");
             return ResponseEntity.ok().build(); // HTTP 200 OK

@@ -93,73 +93,9 @@ $(document).ready(function() {
             }
         });
     });
-    // 인증번호 확인 함수
-$('#auth-number-input').on('input', function() {
-        var authNum = $(this).val();
-        if (authNum.length === 6) {
-            var email = $('#email-input').val();
-            var data = JSON.stringify({
-                email: email,
-                authNum: authNum
-            });
-
-            $.ajax({
-                url: '/mailauthCheck',
-                type: 'POST',
-                contentType: 'application/json',
-                data: data,
-                success: function(response) {
-                    if (response === "ok") {
-                        $('#auth-number-error-message').text("인증에 성공하였습니다.");
-                    } else {
-                        $('#auth-number-error-message').text("인증에 실패하였습니다.");
-                    }
-                },
-                error: function(response) {
-                    $('#auth-number-error-message').text("인증에 실패하였습니다.");
-                }
-            });
-        }
-    });
-});
-</script>
-<script>
-    function convertToLocalDate() {
-        var year = document.getElementById('year-input').value;
-        var month = String(document.getElementById('month-input').value).padStart(2, '0');
-        var day = String(document.getElementById('day-input').value).padStart(2, '0');
-
-        var formattedDate = year + '-' + month + '-' + day;
-        document.getElementById('date-input').value = formattedDate;
-    }
-</script>
-<script>
-$(document).ready(function() {
-    // 이메일 인증 요청 함수
-    $('.auth-button').off('click').on('click', function() {
-        var email = $('#email-input').val();
-        var emailDto = {
-            email: email
-        };
-        $.ajax({
-            url: '/mailSend',
-            type: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify(emailDto),
-            dataType: 'json',
-            success: function(response) {
-                alert('인증 이메일이 발송되었습니다.');
-                console.log(response);
-            },
-            error: function(error) {
-                alert('인증 이메일 발송에 실패했습니다.');
-                console.error(error);
-            }
-        });
-    });
 
     // 인증번호 확인 함수
-    $('#auth-number-input').off('input').on('input', function() {
+    $('#auth-number-input').on('input', function() {
         var authNum = $(this).val();
         var email = $('#email-input').val();
         var data = JSON.stringify({
@@ -186,7 +122,7 @@ $(document).ready(function() {
         }
     });
 
-    $('#email-input').off('input').on('input', function() {
+    $('#email-input').on('input', function() {
         var email = $(this).val();
         var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
@@ -196,7 +132,7 @@ $(document).ready(function() {
         }
     });
 
-    $('#password').off('input').on('input', function() {
+    $('#password').on('input', function() {
         var password = $(this).val();
         var passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,20}$/;
         if (!passwordRegex.test(password)) {
@@ -206,7 +142,7 @@ $(document).ready(function() {
         }
     });
 
-    $('#confirm-password').off('input').on('input', function() {
+    $('#confirm-password').on('input', function() {
         var password = $('#password').val();
         var confirmPassword = $(this).val();
         if (password !== confirmPassword) {
@@ -216,7 +152,7 @@ $(document).ready(function() {
         }
     });
 
-    $('#year-input, #month-input, #day-input').off('input').on('input', function() {
+    $('#year-input, #month-input, #day-input').on('input', function() {
         var year = $('#year-input').val();
         var month = String($('#month-input').val()).padStart(2, '0');
         var day = String($('#day-input').val()).padStart(2, '0');
@@ -241,6 +177,7 @@ $(document).ready(function() {
         var formattedDate = year + '-' + month + '-' + day;
         document.getElementById('date-input').value = formattedDate;
     }
+
     // 폼 제출 전에 필드 이름 변경
     $('#signupForm').on('submit', function(event) {
         event.preventDefault(); // 폼의 기본 제출 동작을 막음
@@ -251,6 +188,14 @@ $(document).ready(function() {
             id: 'email',
             name: 'email',
             value: $('#email-input').val()
+        }).appendTo('#signupForm');
+
+        // auth-number-input 필드 값을 인증번호로 변경
+        $('<input>').attr({
+            type: 'hidden',
+            id: 'authNumber',
+            name: 'authNumber',
+            value: $('#auth-number-input').val()
         }).appendTo('#signupForm');
 
         // 폼을 다시 제출
