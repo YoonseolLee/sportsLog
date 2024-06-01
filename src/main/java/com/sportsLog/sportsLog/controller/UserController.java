@@ -2,10 +2,11 @@ package com.sportsLog.sportsLog.controller;
 
 import com.sportsLog.sportsLog.dto.AddUserRequestDto;
 import com.sportsLog.sportsLog.service.UserService;
+
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequiredArgsConstructor
@@ -15,12 +16,12 @@ public class UserController {
 
     @GetMapping("/user/signup")
     public String showSignupForm() {
-        return "signup";
+        return "/user/signup";
     }
 
     @PostMapping("/user/signup")
-    public String signup(AddUserRequestDto addUserRequest) {
-        userService.saveUser(addUserRequest);
-        return "redirect:/signup"; // 임시
+    public String saveUser(AddUserRequestDto addUserRequestDto) {
+        userService.addUser(addUserRequestDto);
+        return "redirect:/user/signup";
     }
 }

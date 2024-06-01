@@ -67,7 +67,7 @@ public class MailSendService {
      */
     public Boolean CheckAuthNum(String email, String authNum) {
         if (redisUtil.getData(authNum) == null) {
-            log.info("인증 실패: {}");
+            log.info("인증 실패: {}", authNum);
             return false;
         }
         if (redisUtil.getData(authNum).equals(email)) {

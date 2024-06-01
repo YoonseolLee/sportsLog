@@ -5,6 +5,7 @@ import com.sportsLog.sportsLog.entity.User;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,13 +14,17 @@ import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserService {
 
     @PersistenceContext
     private EntityManager entityManager;
 
     @Transactional
-    public Long saveUser(AddUserRequestDto addUserRequestDto) {
+    public Long addUser(AddUserRequestDto addUserRequestDto) {
+        log.info("이메일은 이거다:{}", addUserRequestDto.getEmail());
+        log.info("birthdate는 이거다:{}", addUserRequestDto.getBirthdate());
+        log.info("비번은 이거다:{}", addUserRequestDto.getPassword());
         String encodedPassword = BCrypt.hashpw(addUserRequestDto.getPassword(), BCrypt.gensalt());
 
         User user = User.builder()

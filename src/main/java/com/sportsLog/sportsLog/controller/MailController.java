@@ -28,13 +28,16 @@ public class MailController {
     }
 
     @PostMapping("/mailauthCheck")
-    // 선언부: 클라이언트가 보낸 데이터를 EmailCheckDto 객체로 변환하고, 유효성 검사를 수행한다.
-    public ResponseEntity<String> AuthCheck(@RequestBody @Valid EmailCheckDto emailCheckDto) {
-        Boolean Checked = mailService.CheckAuthNum(emailCheckDto.getEmail(), emailCheckDto.getAuthNum());
-        if (Checked) {
-            return ResponseEntity.ok("ok");
-        } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("인증 실패");
+    public ResponseEntity<Void> authCheck(@RequestBody @Valid EmailCheckDto emailCheckDto) {
+        Boolean checked = mailService.CheckAuthNum(emailCheckDto.getEmail(), emailCheckDto.getAuthNum());
+        if (checked) {
+            log.info("메일 인증 성공");
+            return ResponseEntity.ok().build(); // HTTP 200 OK
         }
+        if (!checked){
+            log.info("메일 인증 실패");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build(); // HTTP 400 Bad Request
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 }
