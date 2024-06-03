@@ -36,7 +36,7 @@
             <div class="input-group">
                 <input type="email" class="form-control" id="email-input" placeholder="이메일을 입력하세요">
                 <div class="input-group-append">
-                    <button class="btn btn-outline-primary auth-button" type="button">인증하기</button>
+                    <button class="btn btn-outline-primary auth-button" id="auth-botton" type="button">인증하기</button>
                 </div>
             </div>
             <small class="error-message" id="email-error-message"></small>
@@ -139,9 +139,11 @@ $(document).ready(function() {
                 data: data,
                 success: function(response) {
                     $('#email-error-message').text("사용 가능한 이메일입니다.");
+                    $('.auth-button').prop('disabled', false); // 중복되지 않은 이메일일 경우 버튼 활성화
                 },
                 error: function(response) {
                     $('#email-error-message').text("이미 등록된 이메일입니다.");
+                    $('.auth-button').prop('disabled', true); // 이미 등록된 이메일일 경우 버튼 비활성화
                 }
             });
         }
