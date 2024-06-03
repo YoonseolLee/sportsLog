@@ -34,7 +34,7 @@ public class MailController {
             log.info("메일 인증 성공");
             return ResponseEntity.ok().build(); // HTTP 200 OK
         }
-        if (!checked){
+        if (!checked) {
             log.info("메일 인증 실패");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build(); // HTTP 400 Bad Request
         }

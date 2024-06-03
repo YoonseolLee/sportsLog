@@ -4,7 +4,9 @@ import com.sportsLog.sportsLog.dto.AddUserRequestDto;
 import com.sportsLog.sportsLog.entity.User;
 import com.sportsLog.sportsLog.service.mail.MailSendService;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.mindrot.jbcrypt.BCrypt;
@@ -23,7 +25,7 @@ public class UserService {
     private final MailSendService mailSendService;
 
     @PersistenceContext
-    private EntityManager entityManager;
+    private EntityManager em;
 
     @Transactional
     public Long addUser(AddUserRequestDto addUserRequestDto) {
@@ -33,7 +35,8 @@ public class UserService {
 
 
         boolean isValid = isSignupFormInputValid(addUserRequestDto);
-
+        // TODO: 이메일 중복여부 검증
+        // TODO: 서버 검증 실패 시 alert
         if (isValid) {
             log.info("이메일은 이거다:{}", addUserRequestDto.getEmail());
             log.info("birthdate는 이거다:{}", addUserRequestDto.getBirthdate());
@@ -52,7 +55,7 @@ public class UserService {
                     .isAccountDeleted(false)
                     .build();
 
-            entityManager.persist(user);
+            em.persist(user);
             return user.getId();
         } else {
             throw new IllegalArgumentException("입력된 값이 유효하지 않습니다.");
@@ -71,5 +74,24 @@ public class UserService {
         }
         log.info("isSignupFormInputValid 통과");
         return true;
+    }
+
+    /**
+     * DB에 동일한 email에 저장되어 있으면 true를 반환한다.
+     * cf. 특정 조건을 만족하는 엔티티의 개수를 반환받아야 하므로 Long 타입을 사용한다.
+     * @param email
+     * @return
+     */
+    public boolean checkMailDuplication(String email) {
+        String jpql = "SELECT COUNT(u) FROM User u WHERE u.email = :email";
+        TypedQuery<Long> query = em.createQuery(jpql, Long.class);
+        query.setParameter("email", email);
+
+        try {
+            Long count = query.getSingleResult();
+            return count > 0;
+        } catch (NoResultException e) {
+            return false;
+        }
     }
 }

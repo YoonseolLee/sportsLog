@@ -129,6 +129,21 @@ $(document).ready(function() {
             $('#email-error-message').text("이메일 형식이 올바르지 않습니다.");
         } else {
             $('#email-error-message').text("");
+            // 이메일 형식이 올바른 경우, 이메일 중복 여부를 검사한다.
+            // {"email": "example@gmail.com"}
+            var data = JSON.stringify({ email: email });
+            $.ajax({
+                url: '/mailDuplicationValidation',
+                type: 'POST',
+                contentType: 'application/json',
+                data: data,
+                success: function(response) {
+                    $('#email-error-message').text("사용 가능한 이메일입니다.");
+                },
+                error: function(response) {
+                    $('#email-error-message').text("이미 등록된 이메일입니다.");
+                }
+            });
         }
     });
 
