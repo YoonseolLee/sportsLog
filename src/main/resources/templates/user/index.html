@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>웹사이트 기본 인덱스</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            background-color: #c5e9b4;
+        }
+
+        .content {
+            flex: 1;
+        }
+
+        .navbar-light .navbar-nav .nav-link {
+            color: #333;
+            transition: color 0.3s ease;
+        }
+
+        .navbar-light .navbar-nav .nav-link:hover {
+            color: #666;
+        }
+
+        .navbar-light .navbar-brand {
+            color: #333;
+            font-weight: bold;
+        }
+
+        .input-group-text {
+            width: 50px;
+            background-color: #c5e9b4;
+            color: #333;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .input-group-text:hover {
+            background-color: #9dd57c;
+        }
+
+        .btn-outline-secondary {
+            color: #333;
+            border-color: #333;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .btn-outline-secondary:hover {
+            background-color: #333;
+            color: #fff;
+        }
+
+        footer {
+            background-color: #f8f9fa;
+            color: #333;
+            padding: 20px 0;
+        }
+
+        .icon {
+            width: 24px;
+            height: 24px;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">스포츠 게시판</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/board/domestic-baseball">국내야구 게시판</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/board/foreign-baseball">해외야구 게시판</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/board/domestic-basketball">국내농구 게시판</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        더 보기
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                        <a class="dropdown-item" href="/board/foreign-basketball">해외농구 게시판</a>
+                        <a class="dropdown-item" href="/board/american-football">미식축구 게시판</a>
+                        <a class="dropdown-item" href="/board/domestic-soccer">국내축구 게시판</a>
+                        <a class="dropdown-item" href="/board/foreign-soccer">해외축구 게시판</a>
+                    </div>
+                </li>
+            </ul>
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <img src="/static/images/search.svg" alt="Search" class="icon">
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <img src="/static/images/person.svg" alt="Person" class="icon">
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</header>
+
+<main class="content container my-4">
+    <div class="row">
+        <div class="col-12">
+            <h2>메인 페이지</h2>
+            <p>여러 게시판을 추가하고 삭제할 수 있습니다. 원하는 게시판을 선택하세요.</p>
+        </div>
+    </div>
+</main>
+
+<footer class="footer">
+    <div class="container">
+        <p>&copy; 2024 게시판 웹사이트. All rights reserved.</p>
+        <p>회사 주소 | 전화번호 | 이메일</p>
+    </div>
+</footer>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
