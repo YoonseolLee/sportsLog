@@ -23,9 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class UserController {
 
-	// TODO: 회원가입 페이지 - 인증하기 버튼이 가입 가능할때만 활성화 되게함.
 	// TODO: try catch와 bean validation 딜레마
-	// TODO: user 테이블에 권한 필드 추가
 
 	private final UserService userService;
 

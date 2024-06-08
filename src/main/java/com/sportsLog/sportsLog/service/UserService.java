@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import com.sportsLog.sportsLog.common.Role;
 import com.sportsLog.sportsLog.dto.AddUserRequestDto;
 import com.sportsLog.sportsLog.entity.User;
 import com.sportsLog.sportsLog.service.mail.MailSendService;
@@ -41,6 +42,7 @@ public class UserService {
 				.email(addUserRequestDto.getEmail())
 				.password(encodedPassword)
 				.birthdate(addUserRequestDto.getBirthdate())
+				.role(Role.USER.name())
 				.emailVerified(true)
 				.passwordChangeDatetime(LocalDateTime.now())
 				.lastLoginDatetime(LocalDateTime.now())
