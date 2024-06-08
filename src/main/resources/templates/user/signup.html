@@ -4,15 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>회원가입</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-
         .form-container {
             max-width: 500px;
             width: 100%;
@@ -20,53 +12,124 @@
             border: 1px solid #ccc;
             border-radius: 5px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background: white;
+            margin: 70px auto;
+        }
+
+        main {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-grow: 1;
+            width: 100%;
+            padding: 70px 0;
         }
 
         .error-message {
             color: red;
         }
     </style>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" th:href="@{/css/index.css}">
 </head>
 <body>
-<div class="form-container">
-    <form th:action="@{/user/signup}" th:object="${user}" method="post" id="signupForm">
-        <div class="form-group">
-            <label for="email">이메일</label>
-            <div class="input-group">
-                <input type="email" class="form-control" id="email" placeholder="이메일을 입력하세요" th:field="*{email}">
-                <div class="input-group-append">
-                    <button class="btn btn-outline-primary auth-button" id="auth-button" type="button" disabled>인증하기</button>
+<header>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">스포츠 게시판</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/board/domestic-baseball">국내야구 게시판</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/board/foreign-baseball">해외야구 게시판</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/board/domestic-basketball">국내농구 게시판</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown"
+                       aria-haspopup="true" aria-expanded="false">
+                        더 보기
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                        <a class="dropdown-item" href="/board/foreign-basketball">해외농구 게시판</a>
+                        <a class="dropdown-item" href="/board/american-football">미식축구 게시판</a>
+                        <a class="dropdown-item" href="/board/domestic-soccer">국내축구 게시판</a>
+                        <a class="dropdown-item" href="/board/foreign-soccer">해외축구 게시판</a>
+                    </div>
+                </li>
+            </ul>
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <img src="/images/search.svg" alt="Search" class="icon">
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <img src="/images/person.svg" alt="Person" class="icon">
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</header>
+
+<main>
+    <div class="form-container">
+        <form th:action="@{/user/signup}" th:object="${user}" method="post" id="signupForm">
+            <div class="form-group">
+                <label for="email">이메일</label>
+                <div class="input-group">
+                    <input type="email" class="form-control" id="email" placeholder="이메일을 입력하세요" th:field="*{email}">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-primary auth-button" id="auth-button" type="button" disabled>
+                            인증하기
+                        </button>
+                    </div>
                 </div>
+                <small class="error-message" id="email-error-message"></small>
+                <input type="text" class="form-control mt-2" id="auth-number" placeholder="인증번호">
+                <small class="error-message" id="auth-number-error-message"></small>
             </div>
-            <small class="error-message" id="email-error-message"></small>
-            <input type="text" class="form-control mt-2" id="auth-number" placeholder="인증번호">
-            <small class="error-message" id="auth-number-error-message"></small>
-        </div>
-        <div class="form-group">
-            <label for="birthdate">생년월일</label>
-            <div class="input-group">
-                <input type="date" class="form-control" id="birthdate" placeholder="생년월일을 선택하세요" th:field="*{birthdate}">
-                <div class="input-group-append">
-                    <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+            <div class="form-group">
+                <label for="birthdate">생년월일</label>
+                <div class="input-group">
+                    <input type="date" class="form-control" id="birthdate" placeholder="생년월일을 선택하세요"
+                           th:field="*{birthdate}">
+                    <div class="input-group-append">
+                    </div>
                 </div>
+                <small class="error-message" id="birthdate-error-message"></small>
             </div>
-            <small class="error-message" id="birthdate-error-message"></small>
-        </div>
-        <div class="form-group">
-            <label for="password">비밀번호</label>
-            <input type="password" class="form-control" id="password" name="password"
-                   placeholder="비밀번호 (영문, 숫자, 특수문자 조합 8~20자리)" th:field="*{password}">
-            <small class="error-message" id="password-error-message"></small>
-        </div>
-        <div class="form-group">
-            <label for="confirm-password">비밀번호 확인</label>
-            <input type="password" class="form-control" id="confirm-password" name="confirmPassword"
-                   placeholder="비밀번호 확인" th:field="*{confirmPassword}">
-            <small class="error-message" id="confirm-password-error-message"></small>
-        </div>
-        <button type="submit" class="btn btn-primary btn-block" id="signup-button" disabled>회원가입</button>
-    </form>
-</div>
+            <div class="form-group">
+                <label for="password">비밀번호</label>
+                <input type="password" class="form-control" id="password" name="password"
+                       placeholder="비밀번호 (영문, 숫자, 특수문자 조합 8~20자리)" th:field="*{password}">
+                <small class="error-message" id="password-error-message"></small>
+            </div>
+            <div class="form-group">
+                <label for="confirm-password">비밀번호 확인</label>
+                <input type="password" class="form-control" id="confirm-password" name="confirmPassword"
+                       placeholder="비밀번호 확인" th:field="*{confirmPassword}">
+                <small class="error-message" id="confirm-password-error-message"></small>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block" id="signup-button" disabled>회원가입</button>
+        </form>
+    </div>
+</main>
+
+<footer class="footer">
+    <div class="container">
+        <p>&copy; 2024 게시판 웹사이트. All rights reserved.</p>
+        <p>회사 주소 | 전화번호 | 이메일</p>
+    </div>
+</footer>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
