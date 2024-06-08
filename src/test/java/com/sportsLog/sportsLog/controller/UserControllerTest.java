@@ -1,10 +1,11 @@
 package com.sportsLog.sportsLog.controller;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import java.time.LocalDate;
 
-import com.sportsLog.sportsLog.service.UserService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -12,36 +13,74 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-@WebMvcTest(UserControllerTest.class)
-class UserControllerTest {
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sportsLog.sportsLog.dto.AddUserRequestDto;
+import com.sportsLog.sportsLog.service.UserService;
 
-  @Autowired
-  private MockMvc mockMvc;
+@WebMvcTest(UserController.class)
+public class UserControllerTest {
 
-  @MockBean
-  private UserService userService;
+	@Autowired
+	private MockMvc mockMvc;
 
-//  @Test
-//  void showSignupForm() {
-//    mockMvc.perform(get("/user/signup"))
-//        .andExpect(status().isOk())
-//        .andExpect(view().name("/user/signup"));
-//  }
+	@Autowired
+	private ObjectMapper objectMapper;
 
-  @Test
-  void saveUser() throws Exception {
-    mockMvc.perform(post("/user/signup")
-            .contentType(MediaType.APPLICATION_JSON)
-            .param("email", "test@example.com")
-            .param("authNumber", "123456")
-            .param("password", "Password123@")
-            .param("confirmPassword", "Password123@")
-            .param("birthdate", "1990-01-01"))
-        .andExpect(status().is3xxRedirection())
-        .andExpect(redirectedUrl("/user/signup"));
-  }
+	@MockBean
+	private UserService userService;
 
-  @Test
-  void validateMailDuplication() {
-  }
+	private AddUserRequestDto addUserRequestDto;
+
+	@BeforeEach
+	void setUp() {
+		addUserRequestDto = new AddUserRequestDto();
+		addUserRequestDto.setEmail("test@example.com");
+		addUserRequestDto.setPassword("password123!");
+		addUserRequestDto.setConfirmPassword("password123!");
+		addUserRequestDto.setBirthdate(LocalDate.parse("1990-01-01"));
+		addUserRequestDto.setAuthNumber("123456");
+	}
+
+	@Test
+	void testShowSignupForm() throws Exception {
+		mockMvc.perform(get("/user/signup"))
+			.andExpect(status().isOk())
+			.andExpect(view().name("user/signup"));
+	}
+
+	@Test
+	void testSaveUserSuccess() throws Exception {
+		mockMvc.perform(post("/user/signup")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(addUserRequestDto)))
+			.andExpect(status().isOk());
+	}
+
+	@Test
+	void testSaveUserFailure() throws Exception {
+		addUserRequestDto.setPassword("invalidPassword");
+		mockMvc.perform(post("/user/signup")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(addUserRequestDto)))
+			.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	void testValidateMailDuplicationSuccess() throws Exception {
+		mockMvc.perform(post("/mailDuplicationValidation")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content("{\"email\":\"test@example.com\"}"))
+			.andExpect(status().isOk());
+	}
+
+	@Test
+	void testValidateMailDuplicationFailure() throws Exception {
+		String duplicateEmail = "duplicate@example.com";
+		when(userService.checkMailDuplication(duplicateEmail)).thenReturn(true);
+
+		mockMvc.perform(post("/mailDuplicationValidation")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content("{\"email\":\"" + duplicateEmail + "\"}"))
+			.andExpect(status().isConflict());
+	}
 }

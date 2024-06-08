@@ -23,8 +23,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class UserController {
 
-	// TODO: try catch와 bean validation 딜레마
-
 	private final UserService userService;
 
 	@GetMapping("/user/signup")
