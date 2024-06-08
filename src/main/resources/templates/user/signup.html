@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>회원가입</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         body {
             display: flex;
@@ -32,191 +33,183 @@
 <div class="form-container">
     <form action="/user/signup" method="post" id="signupForm">
         <div class="form-group">
-            <label for="email-input">이메일</label>
+            <label for="email">이메일</label>
             <div class="input-group">
-                <input type="email" class="form-control" id="email-input" placeholder="이메일을 입력하세요">
+                <input type="email" class="form-control" id="email" placeholder="이메일을 입력하세요">
                 <div class="input-group-append">
-                    <button class="btn btn-outline-primary auth-button" id="auth-botton" type="button">인증하기</button>
+                    <button class="btn btn-outline-primary auth-button" id="auth-botton" type="button">인증하기
+                    </button>
                 </div>
             </div>
             <small class="error-message" id="email-error-message"></small>
-            <input type="text" class="form-control mt-2" id="auth-number-input" placeholder="인증번호">
+            <input type="text" class="form-control mt-2" id="auth-number" placeholder="인증번호">
             <small class="error-message" id="auth-number-error-message"></small>
         </div>
         <div class="form-group">
-            <label for="year-input">생년월일</label>
+            <label for="birthdate">생년월일</label>
             <div class="input-group">
-                <input type="text" class="form-control" id="year-input" placeholder="년(4자리)" oninput="convertToLocalDate()">
-                <input type="text" class="form-control" id="month-input" placeholder="월" oninput="convertToLocalDate()">
-                <input type="text" class="form-control" id="day-input" placeholder="일" oninput="convertToLocalDate()">
+                <input type="date" class="form-control" id="birthdate" placeholder="생년월일을 선택하세요">
+                <div class="input-group-append">
+                    <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+                </div>
             </div>
-            <input type="hidden" id="date-input" name="birthdate">
             <small class="error-message" id="birthdate-error-message"></small>
         </div>
         <div class="form-group">
             <label for="password">비밀번호</label>
-            <input type="password" class="form-control" id="password" name="password" placeholder="비밀번호 (영문, 숫자, 특수문자 조합 8~20자리)">
+            <input type="password" class="form-control" id="password" name="password"
+                   placeholder="비밀번호 (영문, 숫자, 특수문자 조합 8~20자리)">
             <small class="error-message" id="password-error-message"></small>
         </div>
         <div class="form-group">
             <label for="confirm-password">비밀번호 확인</label>
-            <input type="password" class="form-control" id="confirm-password" name="confirmPassword" placeholder="비밀번호 확인">
+            <input type="password" class="form-control" id="confirm-password" name="confirmPassword"
+                   placeholder="비밀번호 확인">
             <small class="error-message" id="confirm-password-error-message"></small>
         </div>
         <button type="submit" class="btn btn-primary btn-block">회원가입</button>
     </form>
 </div>
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-$(document).ready(function() {
-    $('.auth-button').on('click', function() {
-        var email = $('#email-input').val();
-        var emailDto = {
-            email: email
-        };
-        $.ajax({
-            url: '/mailSend',
-            type: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify(emailDto),
-            dataType: 'json',
-            success: function(response) {
-                alert('인증 이메일이 발송되었습니다.');
-                console.log(response);
-            },
-            error: function(error) {
-                alert('인증 이메일 발송에 실패했습니다.');
-                console.error(error);
+    document.addEventListener("DOMContentLoaded", function() {
+    jQuery(function($) {
+        // 인증 이메일 발송
+        $('.auth-button').on('click', function() {
+            var email = $('#email').val();
+            var emailDto = { email: email };
+            $.ajax({
+                url: '/mailSend',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(emailDto),
+                dataType: 'json',
+                success: function(response) {
+                    alert('인증 이메일이 발송되었습니다.');
+                    console.log(response);
+                },
+                error: function(error) {
+                    alert('인증 이메일 발송에 실패했습니다.');
+                    console.error(error);
+                }
+            });
+        });
+
+        // 인증번호 확인
+        $('#auth-number').on('input', function() {
+            var authNum = $(this).val();
+            var email = $('#email').val();
+            var data = JSON.stringify({ email: email, authNum: authNum });
+
+            if (authNum.length === 6) {
+                $.ajax({
+                    url: '/mailauthCheck',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: data,
+                    success: function(response) {
+                        $('#auth-number-error-message').text("인증에 성공하였습니다.");
+                        $('#auth-number').prop('disabled', true);
+                    },
+                    error: function(response) {
+                        $('#auth-number-error-message').text("인증에 실패하였습니다.");
+                    }
+                });
+            } else {
+                $('#auth-number-error-message').text("");
             }
         });
-    });
 
-    // 인증번호 확인 함수
-    $('#auth-number-input').on('input', function() {
-        var authNum = $(this).val();
-        var email = $('#email-input').val();
-        var data = JSON.stringify({
-            email: email,
-            authNum: authNum
+        // 이메일 유효성 및 중복 검사
+        $('#email').on('input', function() {
+            var email = $(this).val();
+            var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                $('#email-error-message').text("이메일 형식이 올바르지 않습니다.");
+            } else {
+                $('#email-error-message').text("");
+                var data = JSON.stringify({ email: email });
+                $.ajax({
+                    url: '/mailDuplicationValidation',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: data,
+                    success: function(response) {
+                        $('#email-error-message').text("사용 가능한 이메일입니다.");
+                        $('.auth-button').prop('disabled', false);
+                    },
+                    error: function(response) {
+                        $('#email-error-message').text("이미 등록된 이메일입니다.");
+                        $('.auth-button').prop('disabled', true);
+                    }
+                });
+            }
         });
 
-        if (authNum.length === 6) {
+        // 비밀번호 유효성 검사
+        $('#password').on('input', function() {
+            var password = $(this).val();
+            var passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,20}$/;
+            if (!passwordRegex.test(password)) {
+                $('#password-error-message').text("비밀번호는 영문, 숫자, 특수문자를 포함하여 8~20자리여야 합니다.");
+            } else {
+                $('#password-error-message').text("");
+            }
+        });
+
+        // 비밀번호 확인
+        $('#confirm-password').on('input', function() {
+            var password = $('#password').val();
+            var confirmPassword = $(this).val();
+            if (password !== confirmPassword) {
+                $('#confirm-password-error-message').text("비밀번호가 일치하지 않습니다.");
+            } else {
+                $('#confirm-password-error-message').text("");
+            }
+        });
+
+        // 생년월일 유효성 검사
+        function validateBirthdate() {
+            var birthdateInput = $('#birthdate').val();
+            var birthdateErrorMessage = $('#birthdate-error-message');
+            var datePattern = /^\d{4}-\d{2}-\d{2}$/;
+            if (!birthdateInput || !datePattern.test(birthdateInput) || isNaN(new Date(birthdateInput).getTime())) {
+                birthdateErrorMessage.text("유효한 날짜를 입력하세요. (예: 1997-03-16)");
+            } else {
+                birthdateErrorMessage.text("");
+            }
+        }
+
+        $('#birthdate').on('input', validateBirthdate);
+
+        $('#signupForm').on('submit', function(event) {
+            event.preventDefault();
+
+            var formData = {
+                email: $('#email').val(),
+                authNumber: $('#auth-number').val(),
+                password: $('#password').val(),
+                confirmPassword: $('#confirm-password').val(),
+                birthdate: $('#birthdate').val()
+            };
+
+            var jsonData = JSON.stringify(formData);
+
             $.ajax({
-                url: '/mailauthCheck',
+                url: '/user/signup',
                 type: 'POST',
                 contentType: 'application/json',
-                data: data,
+                data: jsonData,
                 success: function(response) {
-                    $('#auth-number-error-message').text("인증에 성공하였습니다.");
-                    $('#auth-number-input').prop('disabled', true);
+                    alert(response);
                 },
-                error: function(response) {
-                    $('#auth-number-error-message').text("인증에 실패하였습니다.");
+                error: function(error) {
+                    alert(xhr.responseText);
                 }
             });
-        } else {
-            $('#auth-number-error-message').text("");
-        }
-    });
-
-    $('#email-input').on('input', function() {
-        var email = $(this).val();
-        var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-            $('#email-error-message').text("이메일 형식이 올바르지 않습니다.");
-        } else {
-            $('#email-error-message').text("");
-            // 이메일 형식이 올바른 경우, 이메일 중복 여부를 검사한다.
-            // {"email": "example@gmail.com"}
-            var data = JSON.stringify({ email: email });
-            $.ajax({
-                url: '/mailDuplicationValidation',
-                type: 'POST',
-                contentType: 'application/json',
-                data: data,
-                success: function(response) {
-                    $('#email-error-message').text("사용 가능한 이메일입니다.");
-                    $('.auth-button').prop('disabled', false); // 중복되지 않은 이메일일 경우 버튼 활성화
-                },
-                error: function(response) {
-                    $('#email-error-message').text("이미 등록된 이메일입니다.");
-                    $('.auth-button').prop('disabled', true); // 이미 등록된 이메일일 경우 버튼 비활성화
-                }
-            });
-        }
-    });
-
-    $('#password').on('input', function() {
-        var password = $(this).val();
-        var passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,20}$/;
-        if (!passwordRegex.test(password)) {
-            $('#password-error-message').text("비밀번호는 영문, 숫자, 특수문자를 포함하여 8~20자리여야 합니다.");
-        } else {
-            $('#password-error-message').text("");
-        }
-    });
-
-    $('#confirm-password').on('input', function() {
-        var password = $('#password').val();
-        var confirmPassword = $(this).val();
-        if (password !== confirmPassword) {
-            $('#confirm-password-error-message').text("비밀번호가 일치하지 않습니다.");
-        } else {
-            $('#confirm-password-error-message').text("");
-        }
-    });
-
-    $('#year-input, #month-input, #day-input').on('input', function() {
-        var year = $('#year-input').val();
-        var month = String($('#month-input').val()).padStart(2, '0');
-        var day = String($('#day-input').val()).padStart(2, '0');
-        if (!validateDate(year, month, day)) {
-            $('#birthdate-error-message').text("유효한 날짜를 입력하세요. (예: 1997-03-16)");
-        } else {
-            $('#birthdate-error-message').text("");
-            convertToLocalDate();
-        }
-    });
-
-    function validateDate(year, month, day) {
-        var dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-        var dateString = year + '-' + month + '-' + day;
-        return dateRegex.test(dateString) && !isNaN(new Date(dateString).getTime());
-    }
-
-    function convertToLocalDate() {
-        var year = document.getElementById('year-input').value;
-        var month = String(document.getElementById('month-input').value).padStart(2, '0');
-        var day = String(document.getElementById('day-input').value).padStart(2, '0');
-        var formattedDate = year + '-' + month + '-' + day;
-        document.getElementById('date-input').value = formattedDate;
-    }
-
-    // 폼 제출 전에 필드 이름 변경
-    $('#signupForm').on('submit', function(event) {
-        event.preventDefault(); // 폼의 기본 제출 동작을 막음
-
-        // email-input 필드 값을 email로 변경
-        $('<input>').attr({
-            type: 'hidden',
-            id: 'email',
-            name: 'email',
-            value: $('#email-input').val()
-        }).appendTo('#signupForm');
-
-        // auth-number-input 필드 값을 인증번호로 변경
-        $('<input>').attr({
-            type: 'hidden',
-            id: 'authNumber',
-            name: 'authNumber',
-            value: $('#auth-number-input').val()
-        }).appendTo('#signupForm');
-
-        // 폼을 다시 제출
-        this.submit();
+        });
     });
 });
 </script>
