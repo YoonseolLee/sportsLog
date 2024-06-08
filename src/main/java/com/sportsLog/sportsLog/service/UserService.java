@@ -11,12 +11,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import com.sportsLog.sportsLog.common.Role;
 import com.sportsLog.sportsLog.dto.AddUserRequestDto;
 import com.sportsLog.sportsLog.entity.User;
+import com.sportsLog.sportsLog.repository.UserRepository;
 import com.sportsLog.sportsLog.service.mail.MailSendService;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.NoResultException;
-import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.TypedQuery;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -26,9 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 public class UserService {
 
 	private final MailSendService mailSendService;
-
-	@PersistenceContext
-	private EntityManager em;
+	private final UserRepository userRepository;
 
 	@Transactional
 	public Long addUser(AddUserRequestDto addUserRequestDto) {
@@ -51,7 +46,7 @@ public class UserService {
 				.isAccountDeleted(false)
 				.build();
 
-			em.persist(user);
+			userRepository.save(user);
 			return user.getId();
 		} else {
 			throw new IllegalArgumentException("입력된 값이 유효하지 않습니다.");
@@ -74,22 +69,8 @@ public class UserService {
 		return true;
 	}
 
-	/**
-	 * DB에 동일한 email에 저장되어 있으면 true를 반환한다.
-	 * cf. 특정 조건을 만족하는 엔티티의 개수를 반환받아야 하므로 Long 타입을 사용한다.
-	 * @param email
-	 * @return
-	 */
 	public boolean checkMailDuplication(String email) {
-		String jpql = "SELECT COUNT(u) FROM User u WHERE u.email = :email";
-		TypedQuery<Long> query = em.createQuery(jpql, Long.class);
-		query.setParameter("email", email);
-
-		try {
-			Long count = query.getSingleResult();
-			return count > 0;
-		} catch (NoResultException e) {
-			return false;
-		}
+		Long count = userRepository.countByEmail(email);
+		return count > 1;
 	}
 }
