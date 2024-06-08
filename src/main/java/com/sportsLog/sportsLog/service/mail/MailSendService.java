@@ -1,14 +1,16 @@
 package com.sportsLog.sportsLog.service.mail;
 
-import lombok.extern.slf4j.Slf4j;
+import java.util.Random;
+
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
-import java.util.Random;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
@@ -27,6 +29,7 @@ public class MailSendService {
         Random r = new Random();
         int randomNumber = r.nextInt(900000) + 100000;// 100000에서 999999 사이의 숫자 생성
         authNumber = randomNumber;
+        log.info("authNumber = {}", authNumber);
     }
 
     public int getAuthNumber() {
