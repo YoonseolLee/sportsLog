@@ -32,10 +32,6 @@ public class MailSendService {
         log.info("authNumber = {}", authNumber);
     }
 
-    public int getAuthNumber() {
-        return authNumber;
-    }
-
     // 메일을 어디서 보내는지, 어디로 보내는지, 인증 번호를 html 형식으로 어떻게 보내는지를 작성
     public String joinEmail(String email) {
         makeRandomNumber();
@@ -86,5 +82,9 @@ public class MailSendService {
             log.info("인증 실패: {}", authNum);
             return false;
         }
+    }
+
+    public int getAuthNumber() {
+        return authNumber;
     }
 }

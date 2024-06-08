@@ -1,6 +1,11 @@
 package com.sportsLog.sportsLog.service.mail;
 
-import org.assertj.core.api.Assertions;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.BDDMockito.*;
+
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -8,14 +13,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.mail.javamail.JavaMailSender;
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
-
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.verify;
-import static org.mockito.BDDMockito.given;
 
 class MailSendServiceTest {
 
@@ -65,15 +62,49 @@ class MailSendServiceTest {
         verify(mailSender).send(mimeMessage);
     }
 
+    @Test
+    public void testMailSend() throws MessagingException {
+        String setFrom = "from@example.com";
+        String toMail = "to@example.com";
+        String title = "테스트 메일";
+        String content = "테스트입니다.";
+        int authNumber = mailSendService.getAuthNumber();
+
+        // mock MimeMessage
+        MimeMessage mimeMessage = mock(MimeMessage.class);
+        given(mailSender.createMimeMessage()).willReturn(mimeMessage);
+
+        // mock redisUtil.setDataExpire()
+        doNothing().when(redisUtil).setDataExpire(toMail, Integer.toString(authNumber), 60 * 5L);
+
+        mailSendService.mailSend(setFrom, toMail, title, content);
+
+        // Assertions
+        // 각 메소드가 한 번씩 호출되었는지 검증
+        verify(mailSender).createMimeMessage();
+        verify(mailSender).send(mimeMessage);
+        verify(redisUtil).setDataExpire(toMail, Integer.toString(authNumber), 60 * 5L);
+    }
 
     @Test
     public void testCheckAuthNum_Success() {
         String email = "test@example.com";
-        String authNum = "123456!a";
+        String authNum = "123456";
 
         given(redisUtil.getData(email)).willReturn(authNum);
 
-        boolean result = mailSendService.checkAuthNum(email, authNum);
-        assertTrue(result);
+        boolean isAuthNumValid = mailSendService.checkAuthNum(email, authNum);
+        assertTrue(isAuthNumValid);
+    }
+
+    @Test
+    public void testCheckAuthNum_Failure() {
+        String email = "test@example.com";
+        String authNum = "123456";
+
+        given(redisUtil.getData(email)).willReturn("111111");
+
+        boolean isAuthNumValid = mailSendService.checkAuthNum(email, authNum);
+        assertFalse(isAuthNumValid);
     }
 }
