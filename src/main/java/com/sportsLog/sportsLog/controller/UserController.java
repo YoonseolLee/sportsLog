@@ -25,6 +25,11 @@ public class UserController {
 
 	private final UserService userService;
 
+	@GetMapping("/user/main")
+	public String main() {
+		return "user/main";
+	}
+
 	@GetMapping("/user/signup")
 	public String showSignupForm(Model model) {
 		model.addAttribute("user", new AddUserRequestDto());

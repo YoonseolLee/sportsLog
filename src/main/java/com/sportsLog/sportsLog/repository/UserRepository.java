@@ -9,8 +9,10 @@ import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 
 @Repository
+@Slf4j
 public class UserRepository {
 
 	@PersistenceContext
@@ -33,4 +35,11 @@ public class UserRepository {
 		}
 	}
 
+	public User findById(Long id) {
+		try {
+			return em.find(User.class, id);
+		} catch(NoResultException e) {
+			return null;
+		}
+	}
 }

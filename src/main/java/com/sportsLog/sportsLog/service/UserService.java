@@ -29,7 +29,6 @@ public class UserService {
 	public Long addUser(AddUserRequestDto addUserRequestDto) {
 		boolean isValid = isSignupFormInputValid(addUserRequestDto);
 
-		// TODO: 서버 검증 실패 시 alert
 		if (isValid) {
 			String encodedPassword = BCrypt.hashpw(addUserRequestDto.getPassword(), BCrypt.gensalt());
 
@@ -55,22 +54,31 @@ public class UserService {
 
 	@Transactional
 	public boolean isSignupFormInputValid(@RequestBody @Validated AddUserRequestDto addUserRequestDto) {
-		// TODO: 이메일 중복 검증 추가
-		boolean isEmailVerified = mailSendService.checkAuthNum(addUserRequestDto.getEmail(),
-			addUserRequestDto.getAuthNumber());
+		log.info("Starting validation for email: {}", addUserRequestDto.getEmail());
+
+		boolean isEmailVerified = mailSendService.checkAuthNum(addUserRequestDto.getEmail(), addUserRequestDto.getAuthNumber());
 		if (!isEmailVerified) {
+			log.error("Email verification failed for email: {}", addUserRequestDto.getEmail());
 			return false;
 		}
 
 		if (!addUserRequestDto.getPassword().equals(addUserRequestDto.getConfirmPassword())) {
+			log.error("Password and confirm password do not match for email: {}", addUserRequestDto.getEmail());
 			return false;
 		}
-		log.info("isSignupFormInputValid 통과");
+
+		boolean isDuplicated = checkMailDuplication(addUserRequestDto.getEmail());
+		if (isDuplicated) {
+			log.error("Email is already in use: {}", addUserRequestDto.getEmail());
+			return false;
+		}
+
+		log.info("Validation passed for email: {}", addUserRequestDto.getEmail());
 		return true;
 	}
 
 	public boolean checkMailDuplication(String email) {
 		Long count = userRepository.countByEmail(email);
-		return count > 1;
+		return count > 0;
 	}
 }
