@@ -30,7 +30,8 @@ public class UserController {
 	private final UserService userService;
 
 	@GetMapping("/user/signup")
-	public String showSignupForm() {
+	public String showSignupForm(Model model) {
+		model.addAttribute("user", new AddUserRequestDto());
 		return "user/signup";
 	}
 
@@ -41,8 +42,8 @@ public class UserController {
 		if (bindingResult.hasErrors()) {
 			log.info("회원가입 실패");
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("회원가입에 실패하였습니다");
-
 		}
+
 		// 성공 로직
 		userService.addUser(addUserRequestDto);
 		log.info("회원가입 완료: email = {}", addUserRequestDto.getEmail());
