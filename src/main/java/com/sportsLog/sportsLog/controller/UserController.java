@@ -49,14 +49,14 @@ public class UserController {
 	}
 
 	@PostMapping("/mailDuplicationValidation")
-	public ResponseEntity<Void> validateMailDuplication(@RequestBody Map<String, String> request) {
+	public ResponseEntity<String> validateMailDuplication(@RequestBody Map<String, String> request) {
 		String email = request.get("email");
 		boolean isMailDuplicated = userService.checkMailDuplication(email);
 
 		if (isMailDuplicated) {
 			log.error("메일 중복: {}", email);
-			return ResponseEntity.status(HttpStatus.CONFLICT).build();
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("이미 가입된 이메일 주소입니다.");
 		}
-		return ResponseEntity.ok().build();
+		return ResponseEntity.status(HttpStatus.OK).body("가입할 수 있는 이메일 주소입니다.");
 	}
 }
