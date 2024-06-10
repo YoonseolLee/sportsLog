@@ -55,7 +55,7 @@
                         <span class="dropdown-item-text">임시 닉네임</span>
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="/user/profile">마이페이지</a>
-                        <a class="dropdown-item" href="/auth/logout">로그아웃</a>
+                        <a class="dropdown-item" href="#" id="logout-link">로그아웃</a>
                     </div>
                 </li>
                 <li class="nav-item" th:if="${loginUser == null}">
@@ -87,5 +87,25 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    document.getElementById("logout-link").addEventListener("click", function(event) {
+        event.preventDefault(); // 기본 링크 동작을 막음
+
+        console.log("로그아웃 요청 시작"); // 로그 추가
+
+        $.ajax({
+            type: "POST",
+            url: "/auth/logout",
+            success: function(response, status, xhr) {
+                console.log("로그아웃 요청 성공"); // 로그 추가
+                window.location.href = "/";
+            },
+            error: function(xhr, status, error) {
+                console.error("로그아웃 요청 중 오류 발생:", xhr.responseText);
+                alert("로그아웃 요청 중 오류 발생: " + xhr.responseText);
+            }
+        });
+    });
+</script>
 </body>
 </html>

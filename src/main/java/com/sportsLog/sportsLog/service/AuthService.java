@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.sportsLog.sportsLog.entity.User;
 import com.sportsLog.sportsLog.repository.UserRepository;
 
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -24,7 +25,7 @@ public class AuthService {
 		return null;
 	}
 
-	// public void logout(HttpSession session) {
-	// 	session.invalidate();
-	// }
+	public void logout(HttpSession session) {
+		session.invalidate();
+	}
 }
