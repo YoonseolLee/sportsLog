@@ -34,6 +34,7 @@ public class AuthController {
 		return "/auth/login";
 	}
 
+	// TODO: 인터셉터 추가
 	// TODO: 로그인 시 검증 로직
 	@PostMapping("/login")
 	public String login(@Valid @ModelAttribute LoginDto loginDto, BindingResult bindingResult,
