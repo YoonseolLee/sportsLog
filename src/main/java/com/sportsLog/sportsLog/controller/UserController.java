@@ -23,6 +23,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class UserController {
 
+	// TODO: 회원가입 시 닉네임 + 검증
+	// TODO: favicon 넣기
+
 	private final UserService userService;
 
 	@GetMapping("/user/signup")

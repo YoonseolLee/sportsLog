@@ -44,7 +44,7 @@ public class UserRepository {
 
 	public Optional<User> findByEmail(String email) {
 		try {
-			TypedQuery<User> query = em.createQuery("SELECT u FROM user u WHERE u.email = :email", User.class);
+			TypedQuery<User> query = em.createQuery("SELECT u FROM User u WHERE u.email = :email", User.class);
 			query.setParameter("email", email);
 			User user = query.getSingleResult();
 			return Optional.ofNullable(user);
