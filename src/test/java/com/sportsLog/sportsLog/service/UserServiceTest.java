@@ -17,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.sportsLog.sportsLog.dto.AddUserRequestDto;
 import com.sportsLog.sportsLog.entity.User;
 import com.sportsLog.sportsLog.repository.UserRepository;
+import com.sportsLog.sportsLog.service.User.UserService;
 import com.sportsLog.sportsLog.service.mail.MailSendService;
 
 @ExtendWith(MockitoExtension.class)

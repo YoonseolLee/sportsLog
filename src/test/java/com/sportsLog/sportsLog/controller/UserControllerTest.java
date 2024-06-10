@@ -15,7 +15,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sportsLog.sportsLog.dto.AddUserRequestDto;
-import com.sportsLog.sportsLog.service.UserService;
+import com.sportsLog.sportsLog.service.User.UserService;
 
 @WebMvcTest(UserController.class)
 public class UserControllerTest {

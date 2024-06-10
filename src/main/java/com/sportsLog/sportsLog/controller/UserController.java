@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.sportsLog.sportsLog.dto.AddUserRequestDto;
-import com.sportsLog.sportsLog.service.UserService;
+import com.sportsLog.sportsLog.service.User.UserService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +26,7 @@ public class UserController {
 	private final UserService userService;
 
 	@GetMapping("/user/main")
-	public String main() {
+	public String showMainPage() {
 		return "user/main";
 	}
 

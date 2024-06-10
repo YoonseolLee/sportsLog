@@ -1,4 +1,4 @@
-package com.sportsLog.sportsLog.service;
+package com.sportsLog.sportsLog.service.User;
 
 import java.time.LocalDateTime;
 

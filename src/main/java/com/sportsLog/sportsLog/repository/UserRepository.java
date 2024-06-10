@@ -1,5 +1,7 @@
 package com.sportsLog.sportsLog.repository;
 
+import java.util.Optional;
+
 import org.springframework.stereotype.Repository;
 
 import com.sportsLog.sportsLog.entity.User;
@@ -35,11 +37,19 @@ public class UserRepository {
 		}
 	}
 
-	public User findById(Long id) {
+	public Optional<User> findById(Long id) {
+		User user = em.find(User.class, id);
+		return Optional.ofNullable(user);
+	}
+
+	public Optional<User> findByEmail(String email) {
 		try {
-			return em.find(User.class, id);
-		} catch(NoResultException e) {
-			return null;
+			TypedQuery<User> query = em.createQuery("SELECT u FROM user u WHERE u.email = :email", User.class);
+			query.setParameter("email", email);
+			User user = query.getSingleResult();
+			return Optional.ofNullable(user);
+		} catch (NoResultException e) {
+			return Optional.empty();
 		}
 	}
 }
