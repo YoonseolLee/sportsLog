@@ -13,8 +13,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer {
 
-	private LoggedInInterceptor loggedInInterceptor;
-	private LogInterceptor logInterceptor;
+	private final LogInterceptor logInterceptor;
+	private final LoggedInInterceptor loggedInInterceptor;
+
 
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
