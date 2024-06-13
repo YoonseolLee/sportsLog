@@ -1,4 +1,4 @@
-package com.sportsLog.sportsLog.controller;
+package com.sportsLog.sportsLog.controller.auth;
 
 import java.util.Map;
 
@@ -11,9 +11,10 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.sportsLog.sportsLog.dto.AddUserRequestDto;
-import com.sportsLog.sportsLog.service.User.UserService;
+import com.sportsLog.sportsLog.service.auth.SignupService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,20 +22,18 @@ import lombok.extern.slf4j.Slf4j;
 @Controller
 @RequiredArgsConstructor
 @Slf4j
-public class UserController {
+@RequestMapping("/auth")
+public class SignupController {
 
-	// TODO: 회원가입 시 닉네임 + 검증
-	// TODO: favicon 넣기
+	private final SignupService signupService;
 
-	private final UserService userService;
-
-	@GetMapping("/user/signup")
+	@GetMapping("/signup")
 	public String showSignupForm(Model model) {
 		model.addAttribute("user", new AddUserRequestDto());
-		return "user/signup";
+		return "auth/signup";
 	}
 
-	@PostMapping("/user/signup")
+	@PostMapping("/signup")
 	public ResponseEntity<String> saveUser(@RequestBody @Validated AddUserRequestDto addUserRequestDto,
 		BindingResult bindingResult, Model model) {
 		// 실패 로직
@@ -44,7 +43,7 @@ public class UserController {
 		}
 
 		// 성공 로직
-		userService.addUser(addUserRequestDto);
+		signupService.addUser(addUserRequestDto);
 		log.info("회원가입 완료: email = {}", addUserRequestDto.getEmail());
 		return ResponseEntity.ok("회원가입에 성공하였습니다");
 	}
@@ -52,7 +51,7 @@ public class UserController {
 	@PostMapping("/mailDuplicationValidation")
 	public ResponseEntity<String> validateMailDuplication(@RequestBody Map<String, String> request) {
 		String email = request.get("email");
-		boolean isMailDuplicated = userService.checkMailDuplication(email);
+		boolean isMailDuplicated = signupService.checkMailDuplication(email);
 
 		if (isMailDuplicated) {
 			log.error("메일 중복: {}", email);

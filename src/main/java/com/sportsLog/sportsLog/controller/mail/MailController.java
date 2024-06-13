@@ -1,4 +1,4 @@
-package com.sportsLog.sportsLog.controller;
+package com.sportsLog.sportsLog.controller.mail;
 
 import com.sportsLog.sportsLog.dto.mail.EmailCheckDto;
 import com.sportsLog.sportsLog.dto.mail.EmailRequestDto;

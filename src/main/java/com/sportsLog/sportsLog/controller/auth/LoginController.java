@@ -1,7 +1,5 @@
-package com.sportsLog.sportsLog.controller;
+package com.sportsLog.sportsLog.controller.auth;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,7 +23,10 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 @Slf4j
-public class AuthController {
+public class LoginController {
+
+	// TODO: 회원가입 시 닉네임 + 검증
+	// TODO: favicon 넣기
 
 	private final AuthService authService;
 
@@ -57,18 +58,5 @@ public class AuthController {
 		// 세션에 로그인 회원 정보 보관
 		session.setAttribute(SessionConst.LOGIN_EMAIL, loginUser.getEmail());
 		return "redirect:" + redirectURL;
-	}
-
-	@PostMapping("/logout")
-	public ResponseEntity<Void> logout(HttpServletRequest request) {
-		HttpSession session = request.getSession(false);
-		if (session != null) {
-			authService.logout(session);
-			return ResponseEntity.status(HttpStatus.OK).build();
-		}
-		if (session == null) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-		}
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 	}
 }

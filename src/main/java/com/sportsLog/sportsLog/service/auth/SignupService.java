@@ -1,4 +1,4 @@
-package com.sportsLog.sportsLog.service.User;
+package com.sportsLog.sportsLog.service.auth;
 
 import java.time.LocalDateTime;
 
@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class UserService {
+public class SignupService {
 
 	private final MailSendService mailSendService;
 	private final UserRepository userRepository;
