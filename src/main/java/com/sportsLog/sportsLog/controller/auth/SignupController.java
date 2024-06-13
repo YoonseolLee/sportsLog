@@ -36,6 +36,7 @@ public class SignupController {
 	@PostMapping("/signup")
 	public ResponseEntity<String> saveUser(@RequestBody @Validated AddUserRequestDto addUserRequestDto,
 		BindingResult bindingResult, Model model) {
+
 		// 실패 로직
 		if (bindingResult.hasErrors()) {
 			log.info("회원가입 실패");
@@ -58,5 +59,17 @@ public class SignupController {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body("이미 가입된 이메일 주소입니다.");
 		}
 		return ResponseEntity.status(HttpStatus.OK).body("가입할 수 있는 이메일 주소입니다.");
+	}
+
+	@PostMapping("/nicknameDuplicationValidation")
+	public ResponseEntity<String> validateNicknameDuplication(@RequestBody Map<String, String> request) {
+		String nickname = request.get("nickname");
+		boolean isNicknameDuplicated = signupService.checkNicknameDuplication(nickname);
+
+		if (isNicknameDuplicated) {
+			log.error("닉네임 중복: {}", nickname);
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("이미 사용 중인 닉네임입니다.");
+		}
+		return ResponseEntity.status(HttpStatus.OK).body("사용 가능한 닉네임입니다.");
 	}
 }

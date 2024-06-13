@@ -74,7 +74,7 @@
                         <img th:src="@{/images/person.svg}" alt="person" class="icon"/>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownUserMenu">
-                        <!--                        <span class="dropdown-item-text" th:text="${loginUser.nickname}">닉네임</span>-->
+<!--                                                <span class="dropdown-item-text" th:text="${loginUser.nickname}">닉네임</span>-->
                         <span class="dropdown-item-text">임시 닉네임</span>
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="/user/profile">마이페이지</a>
@@ -93,7 +93,7 @@
 
 <main>
     <div class="form-container">
-        <form th:action="@{/user/signup}" th:object="${user}" method="post" id="signupForm">
+        <form th:action="@{/auth/signup}" th:object="${user}" method="post" id="signupForm">
             <div class="form-group">
                 <label for="email">이메일</label>
                 <div class="input-group">
@@ -117,6 +117,12 @@
                     </div>
                 </div>
                 <small class="error-message" id="birthdate-error-message"></small>
+            </div>
+            <div class="form-group">
+                <label for="nickname">닉네임</label>
+                <input type="text" class="form-control" id="nickname" name="nickname"
+                       placeholder="닉네임은 2자 이상 16자 이하, 영어 또는 숫자 또는 한글로 구성되어야 합니다." th:field="*{nickname}">
+                <small class="error-message" id="nickname-error-message"></small>
             </div>
             <div class="form-group">
                 <label for="password">비밀번호</label>
@@ -144,6 +150,6 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-<link rel="stylesheet" th:href="@{/js/main.js}">
+<script th:src="@{/js/main.js}"></script>
 </body>
 </html>

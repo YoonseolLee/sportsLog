@@ -38,6 +38,9 @@ public class User {
     @Column(nullable = false)
     private String role;
 
+    @Column(nullable = false)
+    private String nickname;
+
     private boolean emailVerified;
     private int loginFailureCount;
     private LocalDateTime passwordChangeDatetime;
@@ -50,11 +53,12 @@ public class User {
     public static User createUser(String email, String password, LocalDate birthdate, String role,
         boolean emailVerified, int loginFailureCount, LocalDateTime passwordChangeDatetime,
         LocalDateTime lastLoginDatetime, LocalDateTime accountCreatedDateTime,
-        LocalDateTime accountDeletedDateTime, boolean isAccountDeleted) {
+        LocalDateTime accountDeletedDateTime, boolean isAccountDeleted, String nickname) {
         User user = new User();
         user.email = email;
         user.password = password;
         user.birthdate = birthdate;
+        user.nickname = nickname;
         user.role = role;
         user.emailVerified = emailVerified;
         user.loginFailureCount = loginFailureCount;

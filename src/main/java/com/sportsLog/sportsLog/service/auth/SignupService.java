@@ -36,6 +36,7 @@ public class SignupService {
 				.email(addUserRequestDto.getEmail())
 				.password(encodedPassword)
 				.birthdate(addUserRequestDto.getBirthdate())
+				.nickname(addUserRequestDto.getNickname())
 				.role(Role.USER.name())
 				.emailVerified(true)
 				.passwordChangeDatetime(LocalDateTime.now())
@@ -73,6 +74,11 @@ public class SignupService {
 			return false;
 		}
 
+		boolean isNicknameDuplicated = checkNicknameDuplication(addUserRequestDto.getNickname());
+		if (isNicknameDuplicated) {
+			log.error("Nickname is already in use: {}", addUserRequestDto.getNickname());
+			return false;
+		}
 		log.info("Validation passed for email: {}", addUserRequestDto.getEmail());
 		return true;
 	}
@@ -80,5 +86,9 @@ public class SignupService {
 	public boolean checkMailDuplication(String email) {
 		Long count = userRepository.countByEmail(email);
 		return count > 0;
+	}
+
+	public boolean checkNicknameDuplication(String nickname) {
+		return userRepository.existsByNickName(nickname);
 	}
 }

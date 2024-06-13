@@ -52,4 +52,17 @@ public class UserRepository {
 			return Optional.empty();
 		}
 	}
+
+	public boolean existsByNickName(String nickname) {
+		String jpql = "SELECT COUNT(u) FROM User u WHERE u.nickname = :nickname";
+		TypedQuery<Long> query = em.createQuery(jpql, Long.class);
+		query.setParameter("nickname", nickname);
+
+		try {
+			Long count = query.getSingleResult();
+			return count > 0;
+		} catch (NoResultException e) {
+			return false;
+		}
+	}
 }
