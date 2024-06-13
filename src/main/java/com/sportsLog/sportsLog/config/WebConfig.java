@@ -2,6 +2,7 @@ package com.sportsLog.sportsLog.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.sportsLog.sportsLog.interceptor.LogInterceptor;
@@ -26,5 +27,10 @@ public class WebConfig implements WebMvcConfigurer {
 		registry.addInterceptor(loggedInInterceptor)
 			.order(2)
 			.addPathPatterns("/user/signup");
+	}
+
+	@Override
+	public void addResourceHandlers(ResourceHandlerRegistry registry) {
+		registry.addResourceHandler("/favicon.ico").addResourceLocations("classpath:/static/images/");
 	}
 }
