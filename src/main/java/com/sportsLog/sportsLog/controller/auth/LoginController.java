@@ -43,25 +43,17 @@ public class LoginController {
 		log.info("검증 시작: {} {}", loginDto.getEmail(), loginDto.getPassword());
 		loginValidator.validate(loginDto, bindingResult);
 		log.info("검증 완료");
-		log.info("BindingResult 내용: {}", bindingResult);
 
 		if (bindingResult.hasErrors()) {
+			// 검증 실패 시 에러 메시지를 클라이언트로 전송
 			Map<String, String> errors = new HashMap<>();
-
-			// 필드 에러 추가 및 로그 출력
 			bindingResult.getFieldErrors().forEach(error -> {
 				errors.put(error.getField(), error.getDefaultMessage());
-				log.info("Field Error - Field: {}, Message: {}", error.getField(), error.getDefaultMessage());
 			});
-
-			// 글로벌 에러 추가 및 로그 출력
 			bindingResult.getGlobalErrors().forEach(error -> {
 				errors.put(error.getObjectName(), error.getDefaultMessage());
-				log.info("Global Error - Object: {}, Message: {}", error.getObjectName(), error.getDefaultMessage());
 			});
-
 			log.info("Errors: {}", errors);
-
 			return ResponseEntity.badRequest().body(errors);
 		}
 
@@ -69,12 +61,13 @@ public class LoginController {
 		if (loginUser == null) {
 			Map<String, String> errors = new HashMap<>();
 			errors.put("loginFail", "아이디 또는 비밀번호가 맞지 않습니다.");
+			log.info("Global Error - loginFail: 아이디 또는 비밀번호가 맞지 않습니다.");
 			return ResponseEntity.badRequest().body(errors);
 		}
 
 		HttpSession session = request.getSession(true);
 		session.setAttribute(SessionConst.LOGIN_EMAIL, loginUser.getEmail());
+		session.setAttribute("nickname", loginUser.getNickname());
 		return ResponseEntity.ok().body(Collections.singletonMap("redirectURL", "/"));
 	}
-
 }

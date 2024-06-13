@@ -51,12 +51,12 @@
                         <img th:src="@{/images/person.svg}" alt="person" class="icon"/>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownUserMenu">
-                        <!--                        <span class="dropdown-item-text" th:text="${loginUser.nickname}">닉네임</span>-->
-                        <span class="dropdown-item-text">임시 닉네임</span>
+                        <span class="dropdown-item-text" th:text="${session.nickname}">닉네임</span>
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="/user/profile">마이페이지</a>
                         <a class="dropdown-item" href="#" id="logout-link">로그아웃</a>
                     </div>
+
                 </li>
                 <li class="nav-item" th:if="${loginUser == null}">
                     <a class="nav-link" href="/auth/login">
