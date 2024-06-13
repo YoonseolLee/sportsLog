@@ -1,72 +1,13 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>main page</title>
+    <title>로그인</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" th:href="@{/css/main.css}">
 </head>
 <body>
-<header>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="/">스포츠 게시판</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="/board/domestic-baseball">국내야구 게시판</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/board/foreign-baseball">해외야구 게시판</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/board/domestic-basketball">국내농구 게시판</a>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        더 보기
-                    </a>
-                    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                        <a class="dropdown-item" href="/board/foreign-basketball">해외농구 게시판</a>
-                        <a class="dropdown-item" href="/board/american-football">미식축구 게시판</a>
-                        <a class="dropdown-item" href="/board/domestic-soccer">국내축구 게시판</a>
-                        <a class="dropdown-item" href="/board/foreign-soccer">해외축구 게시판</a>
-                    </div>
-                </li>
-            </ul>
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
-                        <img th:src="@{/images/search.svg}" alt="search" class="icon"/>
-                    </a>
-                </li>
-                <li class="nav-item dropdown" th:if="${loginUser != null}">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownUserMenu" role="button"
-                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <img th:src="@{/images/person.svg}" alt="person" class="icon"/>
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownUserMenu">
-                        <!--                        <span class="dropdown-item-text" th:text="${loginUser.nickname}">닉네임</span>-->
-                        <span class="dropdown-item-text">임시 닉네임</span>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="/user/profile">마이페이지</a>
-                        <a class="dropdown-item" href="#" id="logout-link">로그아웃</a>
-                    </div>
-                </li>
-                <li class="nav-item" th:if="${loginUser == null}">
-                    <a class="nav-link" href="/auth/login">
-                        <img th:src="@{/images/person.svg}" alt="person" class="icon"/>
-                    </a>
-                </li>
-            </ul>
-        </div>
-    </nav>
-</header>
-
-<!--main-->
 <main class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-6">
@@ -75,16 +16,18 @@
                     <h3 class="text-center">로그인</h3>
                 </div>
                 <div class="card-body">
-                    <form th:action="@{/auth/login}" method="post">
+                    <form id="loginForm">
                         <div class="form-group">
                             <label for="email">이메일</label>
                             <input type="email" class="form-control" id="email" name="email" placeholder="이메일 입력" required>
+                            <small class="error-message text-danger" id="email-error-message"></small>
                         </div>
                         <div class="form-group">
                             <label for="password">비밀번호</label>
                             <input type="password" class="form-control" id="password" name="password" placeholder="비밀번호 입력" required>
+                            <small class="error-message text-danger" id="password-error-message"></small>
                         </div>
-                        <button type="submit" class="btn btn-primary btn-block">로그인</button>
+                        <button type="submit" class="btn btn-primary btn-block" id="login-button" disabled>로그인</button>
                     </form>
                     <div class="mt-3 text-center">
                         <a href="/user/find-password" class="d-block">비밀번호 찾기</a>
@@ -95,16 +38,68 @@
         </div>
     </div>
 </main>
-
-<footer class="footer mt-5">
-    <div class="container">
-        <p>&copy; 2024 게시판 웹사이트. All rights reserved.</p>
-        <p>회사 주소 | 전화번호 | 이메일</p>
-    </div>
-</footer>
-
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    $(document).ready(function() {
+        var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        var passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,20}$/;
+
+        function validateForm() {
+            var email = $('#email').val();
+            var password = $('#password').val();
+            var isEmailValid = emailRegex.test(email);
+            var isPasswordValid = passwordRegex.test(password);
+
+            if (isEmailValid) {
+                $('#email-error-message').text('');
+            } else {
+                $('#email-error-message').text('올바른 이메일 형식을 입력하세요.');
+            }
+
+            if (isPasswordValid) {
+                $('#password-error-message').text('');
+            } else {
+                $('#password-error-message').text('비밀번호는 영문, 숫자, 특수문자를 포함하여 8~20자리여야 합니다.');
+            }
+
+            if (isEmailValid && isPasswordValid) {
+                $('#login-button').prop('disabled', false);
+            } else {
+                $('#login-button').prop('disabled', true);
+            }
+        }
+
+        $('#email').on('input', validateForm);
+        $('#password').on('input', validateForm);
+
+        $('#loginForm').on('submit', function(event) {
+            event.preventDefault();
+            var formData = {
+                email: $('#email').val(),
+                password: $('#password').val()
+            };
+
+            $.ajax({
+                url: '/auth/login',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(formData),
+                success: function(response) {
+                    window.location.href = response.redirectURL;
+                },
+                error: function(xhr) {
+                    var errors = xhr.responseJSON;
+                    var errorMessage = '';
+                    for (var key in errors) {
+                        if (errors.hasOwnProperty(key)) {
+                            errorMessage += errors[key] + '\n';
+                        }
+                    }
+                    alert(errorMessage);
+                }
+            });
+        });
+    });
+</script>
 </body>
 </html>

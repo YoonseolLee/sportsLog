@@ -1,17 +1,22 @@
 package com.sportsLog.sportsLog.controller.auth;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.sportsLog.sportsLog.common.SessionConst;
 import com.sportsLog.sportsLog.dto.LoginDto;
 import com.sportsLog.sportsLog.entity.User;
 import com.sportsLog.sportsLog.service.AuthService;
+import com.sportsLog.sportsLog.validator.LoginValidator;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -25,38 +30,51 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class LoginController {
 
-	// TODO: 회원가입 시 닉네임 + 검증
-	// TODO: favicon 넣기
-
 	private final AuthService authService;
+	private final LoginValidator loginValidator;
 
 	@GetMapping("/login")
 	public String showLoginForm() {
 		return "/auth/login";
 	}
 
-	// TODO: 인터셉터 추가
-	// TODO: 로그인 시 검증 로직
 	@PostMapping("/login")
-	public String login(@Valid @ModelAttribute LoginDto loginDto, BindingResult bindingResult,
-		@RequestParam(name = "redirectURL", defaultValue = "/") String redirectURL, HttpServletRequest request) {
+	public ResponseEntity<Map<String, String>> login(@RequestBody @Valid LoginDto loginDto, BindingResult bindingResult, HttpServletRequest request) {
+		log.info("검증 시작: {} {}", loginDto.getEmail(), loginDto.getPassword());
+		loginValidator.validate(loginDto, bindingResult);
+		log.info("검증 완료");
+		log.info("BindingResult 내용: {}", bindingResult);
+
 		if (bindingResult.hasErrors()) {
-			return "auth/login";
+			Map<String, String> errors = new HashMap<>();
+
+			// 필드 에러 추가 및 로그 출력
+			bindingResult.getFieldErrors().forEach(error -> {
+				errors.put(error.getField(), error.getDefaultMessage());
+				log.info("Field Error - Field: {}, Message: {}", error.getField(), error.getDefaultMessage());
+			});
+
+			// 글로벌 에러 추가 및 로그 출력
+			bindingResult.getGlobalErrors().forEach(error -> {
+				errors.put(error.getObjectName(), error.getDefaultMessage());
+				log.info("Global Error - Object: {}, Message: {}", error.getObjectName(), error.getDefaultMessage());
+			});
+
+			log.info("Errors: {}", errors);
+
+			return ResponseEntity.badRequest().body(errors);
 		}
+
 		User loginUser = authService.login(loginDto.getEmail(), loginDto.getPassword());
-		log.info("login: {} ", loginUser);
-
 		if (loginUser == null) {
-			bindingResult.reject("loginFail", "아이디 또는 비밀번호가 맞지 않습니다.");
-			return "auth/login";
+			Map<String, String> errors = new HashMap<>();
+			errors.put("loginFail", "아이디 또는 비밀번호가 맞지 않습니다.");
+			return ResponseEntity.badRequest().body(errors);
 		}
 
-		// 로그인 성공 처리
-		// 세션이 있으면 있는 세션 반환, 없으면 신규 세션을 생성
 		HttpSession session = request.getSession(true);
-
-		// 세션에 로그인 회원 정보 보관
 		session.setAttribute(SessionConst.LOGIN_EMAIL, loginUser.getEmail());
-		return "redirect:" + redirectURL;
+		return ResponseEntity.ok().body(Collections.singletonMap("redirectURL", "/"));
 	}
+
 }
