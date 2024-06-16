@@ -30,6 +30,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class LoginController {
 
+	// TODO: 자동로그인 기능
+
 	private final AuthService authService;
 	private final LoginValidator loginValidator;
 
