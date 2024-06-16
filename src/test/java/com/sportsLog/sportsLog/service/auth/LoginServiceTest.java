@@ -5,68 +5,72 @@ import static org.mockito.Mockito.*;
 
 import java.util.Optional;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mindrot.jbcrypt.BCrypt;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 import com.sportsLog.sportsLog.entity.User;
+import com.sportsLog.sportsLog.exception.LoginFailedException;
 import com.sportsLog.sportsLog.repository.UserRepository;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
 class LoginServiceTest {
 
-	@Mock
+	@Autowired
+	private LoginService loginService;
+
+	@MockBean
 	private UserRepository userRepository;
 
-	@InjectMocks
-	private LoginService loginService;
+	private User user;
+
+	@BeforeEach
+	void setUp() {
+		user = User.builder()
+			.email("test@example.com")
+			.password(BCrypt.hashpw("password", BCrypt.gensalt()))
+			.build();
+	}
 
 	@Test
 	void testLoginSuccessful() {
 		// given
-		String email = "test@example.com";
-		String password = "!test123456";
-		String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
-		User user = new User(1L, email, hashedPassword, null, null, null, false, 0, null, null, null, null, false);
-		when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
+		when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(user));
 
 		// when
-		User loggedInUser = loginService.login(email, password);
+		User result = loginService.login("test@example.com", "password");
 
 		// then
-		assertEquals(user, loggedInUser);
-	}
-
-	@Test
-	void testLoginFailedWithInvalidEmail() {
-		// given
-		String email = "invalid@example.com";
-		String password = "!test123456";
-		when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
-
-		// when
-		User loggedInUser = loginService.login(email, password);
-
-		// then
-		assertNull(loggedInUser);
+		assertNotNull(result);
+		assertEquals("test@example.com", result.getEmail());
 	}
 
 	@Test
 	void testLoginFailedWithInvalidPassword() {
 		// given
-		String email = "test@example.com";
-		String password = "wrongpassword";
-		String hashedPassword = BCrypt.hashpw("password", BCrypt.gensalt());
-		User user = new User(1L, email, hashedPassword, null, null, null, false, 0, null, null, null, null, false);
-		when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
+		when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(user));
 
-		// when
-		User loggedInUser = loginService.login(email, password);
+		// when / then
+		LoginFailedException exception = assertThrows(LoginFailedException.class, () -> {
+			loginService.login("test@example.com", "wrongpassword");
+		});
 
-		// then
-		assertNull(loggedInUser);
+		assertEquals("아이디 또는 비밀번호가 맞지 않습니다.", exception.getMessage());
+	}
+
+	@Test
+	void testLoginFailedWithNonExistentUser() {
+		// given
+		when(userRepository.findByEmail("nonexistent@example.com")).thenReturn(Optional.empty());
+
+		// when / then
+		LoginFailedException exception = assertThrows(LoginFailedException.class, () -> {
+			loginService.login("nonexistent@example.com", "password");
+		});
+
+		assertEquals("아이디 또는 비밀번호가 맞지 않습니다.", exception.getMessage());
 	}
 }

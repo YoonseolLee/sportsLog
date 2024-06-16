@@ -3,6 +3,7 @@ package com.sportsLog.sportsLog.exception;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -24,6 +25,20 @@ public class GlobalExceptionHandler {
 			errorResult.put(fieldName, errorMessage);
 		});
 		return errorResult;
+	}
+
+	@ExceptionHandler(LoginFailedException.class)
+	public ResponseEntity<Map<String, String>> handleLoginFailedException(LoginFailedException ex) {
+		Map<String, String> errors = new HashMap<>();
+		errors.put("loginFail", ex.getMessage());
+		return ResponseEntity.badRequest().body(errors);
+	}
+
+	@ExceptionHandler(LogoutFailedException.class)
+	public ResponseEntity<Map<String, String>> handleLogoutFailedException(LogoutFailedException ex) {
+		Map<String, String> errors = new HashMap<>();
+		errors.put("logoutFail", ex.getMessage());
+		return ResponseEntity.badRequest().body(errors);
 	}
 
 	@ExceptionHandler(Exception.class)
