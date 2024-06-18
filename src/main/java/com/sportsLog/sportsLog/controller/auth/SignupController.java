@@ -1,5 +1,6 @@
 package com.sportsLog.sportsLog.controller.auth;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.sportsLog.sportsLog.dto.AddUserRequestDto;
+import com.sportsLog.sportsLog.exception.SignupFailedException;
 import com.sportsLog.sportsLog.service.auth.SignupService;
 
 import lombok.RequiredArgsConstructor;
@@ -39,14 +41,23 @@ public class SignupController {
 
 		// 실패 로직
 		if (bindingResult.hasErrors()) {
-			log.info("회원가입 실패");
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("회원가입에 실패하였습니다");
+			log.info("회원가입에 실패하였습니다.");
+			Map<String, String> errors = new HashMap<>();
+			bindingResult.getFieldErrors().forEach(error -> {
+				errors.put(error.getField(), error.getDefaultMessage());
+			});
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors.toString());
 		}
 
 		// 성공 로직
-		signupService.addUser(addUserRequestDto);
-		log.info("회원가입 완료: email = {}", addUserRequestDto.getEmail());
-		return ResponseEntity.ok("회원가입에 성공하였습니다");
+		try {
+			signupService.addUser(addUserRequestDto);
+			log.info("회원가입 완료: email = {}", addUserRequestDto.getEmail());
+			return ResponseEntity.ok("회원가입에 성공하였습니다.");
+		} catch (SignupFailedException e) {
+			log.error("Signup failed: {}", e.getMessage());
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+		}
 	}
 
 	@PostMapping("/mailDuplicationValidation")

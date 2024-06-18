@@ -5,12 +5,11 @@ import java.time.LocalDateTime;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import com.sportsLog.sportsLog.common.Role;
 import com.sportsLog.sportsLog.dto.AddUserRequestDto;
 import com.sportsLog.sportsLog.entity.User;
+import com.sportsLog.sportsLog.exception.SignupFailedException;
 import com.sportsLog.sportsLog.repository.UserRepository;
 import com.sportsLog.sportsLog.service.mail.MailSendService;
 
@@ -27,65 +26,53 @@ public class SignupService {
 
 	@Transactional
 	public Long addUser(AddUserRequestDto addUserRequestDto) {
-		boolean isValid = isSignupFormInputValid(addUserRequestDto);
+		validateSignupForm(addUserRequestDto);
 
-		if (isValid) {
-			String encodedPassword = BCrypt.hashpw(addUserRequestDto.getPassword(), BCrypt.gensalt());
+		String encodedPassword = BCrypt.hashpw(addUserRequestDto.getPassword(), BCrypt.gensalt());
+		User user = User.builder()
+			.email(addUserRequestDto.getEmail())
+			.password(encodedPassword)
+			.birthdate(addUserRequestDto.getBirthdate())
+			.nickname(addUserRequestDto.getNickname())
+			.role(Role.USER.name())
+			.emailVerified(true)
+			.passwordChangeDatetime(LocalDateTime.now())
+			.lastLoginDatetime(LocalDateTime.now())
+			.accountCreatedDateTime(LocalDateTime.now())
+			.isAccountDeleted(false)
+			.build();
 
-			User user = User.builder()
-				.email(addUserRequestDto.getEmail())
-				.password(encodedPassword)
-				.birthdate(addUserRequestDto.getBirthdate())
-				.nickname(addUserRequestDto.getNickname())
-				.role(Role.USER.name())
-				.emailVerified(true)
-				.passwordChangeDatetime(LocalDateTime.now())
-				.lastLoginDatetime(LocalDateTime.now())
-				.accountCreatedDateTime(LocalDateTime.now())
-				.accountDeletedDateTime(null)
-				.isAccountDeleted(false)
-				.build();
-
-			userRepository.save(user);
-			return user.getId();
-		} else {
-			throw new IllegalArgumentException("입력된 값이 유효하지 않습니다.");
-		}
+		userRepository.save(user);
+		return user.getId();
 	}
 
-	@Transactional
-	public boolean isSignupFormInputValid(@RequestBody @Validated AddUserRequestDto addUserRequestDto) {
-		log.info("Starting validation for email: {}", addUserRequestDto.getEmail());
+	public void validateSignupForm(AddUserRequestDto addUserRequestDto) {
+		log.info("회원가입 검증을 시작합니다.: {}", addUserRequestDto.getEmail());
 
-		boolean isEmailVerified = mailSendService.checkAuthNum(addUserRequestDto.getEmail(), addUserRequestDto.getAuthNumber());
-		if (!isEmailVerified) {
-			log.error("Email verification failed for email: {}", addUserRequestDto.getEmail());
-			return false;
+		if (!mailSendService.checkAuthNum(addUserRequestDto.getEmail(), addUserRequestDto.getAuthNumber())) {
+			log.error("이메일 검증 실패: {}", addUserRequestDto.getEmail());
+			throw new SignupFailedException("이메일 인증에 실패하였습니다.");
 		}
 
 		if (!addUserRequestDto.getPassword().equals(addUserRequestDto.getConfirmPassword())) {
-			log.error("Password and confirm password do not match for email: {}", addUserRequestDto.getEmail());
-			return false;
+			log.error("비밀번호와 비밀번호 확인 검증 실패: {}", addUserRequestDto.getEmail());
+			throw new SignupFailedException("비밀번호와 비밀번호 확인이 일치하지 않습니다.");
 		}
 
-		boolean isDuplicated = checkMailDuplication(addUserRequestDto.getEmail());
-		if (isDuplicated) {
-			log.error("Email is already in use: {}", addUserRequestDto.getEmail());
-			return false;
+		if (checkMailDuplication(addUserRequestDto.getEmail())) {
+			log.error("이메일 중복 여부 검증 실패: {}", addUserRequestDto.getEmail());
+			throw new SignupFailedException("이미 사용 중인 이메일입니다.");
 		}
 
-		boolean isNicknameDuplicated = checkNicknameDuplication(addUserRequestDto.getNickname());
-		if (isNicknameDuplicated) {
-			log.error("Nickname is already in use: {}", addUserRequestDto.getNickname());
-			return false;
+		if (checkNicknameDuplication(addUserRequestDto.getNickname())) {
+			log.error("닉네임 중복 여부 검증 실패: {}", addUserRequestDto.getNickname());
+			throw new SignupFailedException("이미 사용 중인 닉네임입니다.");
 		}
-		log.info("Validation passed for email: {}", addUserRequestDto.getEmail());
-		return true;
+		log.info("회원가입 검증을 통과하였습니다.: {}", addUserRequestDto.getEmail());
 	}
 
 	public boolean checkMailDuplication(String email) {
-		Long count = userRepository.countByEmail(email);
-		return count > 0;
+		return userRepository.countByEmail(email) > 0;
 	}
 
 	public boolean checkNicknameDuplication(String nickname) {
