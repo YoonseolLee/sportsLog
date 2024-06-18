@@ -12,8 +12,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.sportsLog.sportsLog.dto.LoginDto;
 import com.sportsLog.sportsLog.entity.User;
@@ -38,7 +36,7 @@ public class LoginController {
 	}
 
 	@PostMapping("/login")
-	public ResponseEntity<Map<String, String>> login(@RequestBody @Validated LoginDto loginDto, BindingResult bindingResult) {
+	public ResponseEntity<Map<String, String>> login(@RequestBody @Validated LoginDto loginDto, BindingResult bindingResult, HttpServletRequest request) {
 		// Bean Validation
 		if (bindingResult.hasErrors()) {
 			Map<String, String> errors = new HashMap<>();
@@ -53,7 +51,6 @@ public class LoginController {
 			// 로그인 로직 수행 및 Custom Validation
 			User loginUser = loginService.login(loginDto.getEmail(), loginDto.getPassword());
 
-			HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
 			loginService.createSession(loginUser, request);
 
 			return ResponseEntity.ok().body(Collections.singletonMap("redirectURL", "/"));
