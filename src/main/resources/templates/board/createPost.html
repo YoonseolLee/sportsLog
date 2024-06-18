@@ -3,16 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>main page</title>
+    <title>글 작성</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/main.css">
     <style>
-        .pagination-container {
-            display: flex;
-            justify-content: center; /* 가로 중앙 정렬 */
+        .editable-content {
+            border: 1px solid #ced4da;
+            padding: 10px;
+            min-height: 300px;
+            overflow: auto;
         }
-        .pagination-container nav {
-            margin-right: 200px; /* 페이지네이션 버튼을 오른쪽으로 20픽셀 이동 */
+        .editable-content img {
+            max-width: 100%;
         }
     </style>
 </head>
@@ -64,7 +66,6 @@
                         <a class="dropdown-item" href="/user/profile">마이페이지</a>
                         <a class="dropdown-item" href="#" id="logout-link">로그아웃</a>
                     </div>
-
                 </li>
                 <li class="nav-item" th:if="${loginUser == null}">
                     <a class="nav-link" href="/auth/login">
@@ -79,74 +80,43 @@
 <main class="content container my-4">
     <div class="row">
         <div class="col-12">
-            <h2>야구 게시판</h2>
-            <table class="table table-hover">
-                <thead class="thead-light">
-                <tr>
-                    <th scope="col">번호</th>
-                    <th scope="col">제목</th>
-                    <th scope="col">작성자</th>
-                    <th scope="col">작성일</th>
-                    <th scope="col">조회수</th>
-                    <th scope="col">추천</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="post : ${posts}">
-                    <th scope="row" th:text="${post.id}">1</th>
-                    <td>
-                        <a th:href="@{/board/baseball/{id}(id=${post.id})}" th:text="${post.title}">게시글 제목</a>
-                    </td>
-                    <td th:text="${post.author}">작성자</td>
-                    <td th:text="${#dates.format(post.date, 'yyyy-MM-dd')}">2024-01-01</td>
-                    <td th:text="${post.views}">100</td>
-                    <td th:text="${post.recommendations}">10</td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-    <div class="row justify-content-between">
-        <div class="col-auto">
-            <div class="input-group mb-3">
-                <input type="text" class="form-control" placeholder="검색어를 입력하세요" aria-label="Search" aria-describedby="search-button">
-                <div class="input-group-append">
-                    <button class="btn btn-outline-secondary" type="button" id="search-button">검색</button>
+            <h2>글 작성</h2>
+            <form id="write-form" method="post" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="title">제목</label>
+                    <input type="text" class="form-control" id="title" name="title" placeholder="제목을 입력하세요" required>
                 </div>
-            </div>
-        </div>
-        <div class="pagination-container col-auto">
-            <nav aria-label="Page navigation">
-                <ul class="pagination">
-                    <li class="page-item">
-                        <a class="page-link" href="#" aria-label="Previous">
-                            <span aria-hidden="true">&laquo;</span>
-                        </a>
-                    </li>
-                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                    <li class="page-item"><a class="page-link" href="#">3</a></li>
-                    <li class="page-item"><a class="page-link" href="#">4</a></li>
-                    <li class="page-item"><a class="page-link" href="#">5</a></li>
-                    <li class="page-item">
-                        <a class="page-link" href="#" aria-label="Next">
-                            <span aria-hidden="true">&raquo;</span>
-                        </a>
-                    </li>
-                </ul>
-            </nav>
-        </div>
-        <div class="col-auto">
-            <button type="button" class="btn btn-primary" onclick="location.href='/board/createPost?board=baseball'">글쓰기</button>
+                <div class="form-group">
+                    <label for="content">내용</label>
+                    <div id="content" class="editable-content" contenteditable="true"></div>
+                    <textarea id="hidden-content" name="content" style="display:none;"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="file">파일 업로드</label>
+                    <input type="file" class="form-control-file" id="file" name="file">
+                </div>
+                <button type="submit" class="btn btn-primary">작성</button>
+            </form>
         </div>
     </div>
 </main>
+
 <footer class="footer">
     <div class="container">
         <p>&copy; 2024 게시판 웹사이트. All rights reserved.</p>
         <p>회사 주소 | 전화번호 | 이메일</p>
     </div>
 </footer>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const urlParams = new URLSearchParams(window.location.search);
+        const board = urlParams.get('board');
+
+        const form = document.getElementById('write-form');
+        form.action = `/board/${board}/createPost`;
+    });
+</script>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
