@@ -8,39 +8,35 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/board")
 public class BoardController {
 
-    @GetMapping("baseball/korean")
-    public String koreanBaseballBoard() {
-        return "baseball-korean";
+    @GetMapping("/baseball")
+    public String baseballBoard() {
+        return "/board/baseball";
     }
 
-    @GetMapping("baseball/foreign")
-    public String foreignBaseballBoard() {
-        return "baseball-foreign";
+    @GetMapping("/basketball")
+    public String basketballBoard() {
+        return "/board/basketball";
     }
 
-    @GetMapping("basketball/korean")
-    public String koreanBasketballBoard() {
-        return "basketball-korean.html";
+    @GetMapping("/soccer")
+    public String soccerBoard() {
+        return "/board/soccer";
     }
 
-    @GetMapping("basketball/foreign")
-    public String foreignBasketballBoard() {
-        return "basketball-foreign";
-    }
-
-    @GetMapping("americanFootball")
+    @GetMapping("/americanFootball")
     public String americanFootballBoard() {
-        return "americanFootball";
+        return "/board/americanFootball";
     }
 
-    @GetMapping("soccer/korean")
-    public String koreanSoccerBoard() {
-        return "soccer-korean";
+    @GetMapping("/mma")
+    public String mmaBoard() {
+        return "/board/mma";
     }
 
-    @GetMapping("soccer/foreign")
-    public String foreignSoccerBoard() {
-        return "soccer-foreign";
+    @GetMapping("/boxing")
+    public String boxingBoard() {
+        return "/board/boxing";
     }
+
 }
 
