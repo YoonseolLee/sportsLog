@@ -13,6 +13,7 @@ import com.sportsLog.sportsLog.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+
 @Service
 @RequiredArgsConstructor
 public class LoginService {

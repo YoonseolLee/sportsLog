@@ -46,5 +46,7 @@ public class AddUserRequestDto {
     @NotNull(message = "생년월일은 필수 입력 값입니다.")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate birthdate;
+
+    private boolean emailVerified;
 }
 

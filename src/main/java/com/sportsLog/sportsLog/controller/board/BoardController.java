@@ -46,7 +46,7 @@ public class BoardController {
 
     @GetMapping("/createPost")
     public ModelAndView createPost(@RequestParam("board") String board) {
-        ModelAndView mav = new ModelAndView("createPost");
+        ModelAndView mav = new ModelAndView("/board/createPost");
         mav.addObject("board", board);
         return mav;
     }

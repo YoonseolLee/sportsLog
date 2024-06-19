@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.sportsLog.sportsLog.common.Role;
 import com.sportsLog.sportsLog.dto.AddUserRequestDto;
 import com.sportsLog.sportsLog.entity.User;
+import com.sportsLog.sportsLog.entity.UserStatus;
 import com.sportsLog.sportsLog.exception.SignupFailedException;
 import com.sportsLog.sportsLog.repository.UserRepository;
 import com.sportsLog.sportsLog.service.mail.MailSendService;
@@ -29,18 +30,25 @@ public class SignupService {
 		validateSignupForm(addUserRequestDto);
 
 		String encodedPassword = BCrypt.hashpw(addUserRequestDto.getPassword(), BCrypt.gensalt());
+
+		UserStatus userStatus = UserStatus.builder()
+			.emailVerified(addUserRequestDto.isEmailVerified())
+			.passwordChangeDatetime(LocalDateTime.now())
+			.lastLoginDatetime(LocalDateTime.now())
+			.accountCreatedDateTime(LocalDateTime.now())
+			.isAccountDeleted(false)
+			.build();
+
 		User user = User.builder()
 			.email(addUserRequestDto.getEmail())
 			.password(encodedPassword)
 			.birthdate(addUserRequestDto.getBirthdate())
 			.nickname(addUserRequestDto.getNickname())
 			.role(Role.USER.name())
-			.emailVerified(true)
-			.passwordChangeDatetime(LocalDateTime.now())
-			.lastLoginDatetime(LocalDateTime.now())
-			.accountCreatedDateTime(LocalDateTime.now())
-			.isAccountDeleted(false)
+			.userStatus(userStatus)
 			.build();
+
+		userStatus.setUser(user);
 
 		userRepository.save(user);
 		return user.getId();

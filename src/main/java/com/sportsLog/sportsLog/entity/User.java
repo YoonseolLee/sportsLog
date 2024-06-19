@@ -1,18 +1,21 @@
 package com.sportsLog.sportsLog.entity;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.Builder;
 
 @Entity
 @Getter
@@ -41,32 +44,32 @@ public class User {
     @Column(nullable = false)
     private String nickname;
 
-    private boolean emailVerified;
-    private int loginFailureCount;
-    private LocalDateTime passwordChangeDatetime;
-    private LocalDateTime lastLoginDatetime;
-    private LocalDateTime accountCreatedDateTime;
-    private LocalDateTime accountDeletedDateTime;
-    private boolean isAccountDeleted;
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private UserStatus userStatus;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Post> posts;
 
     @Builder
     public static User createUser(String email, String password, LocalDate birthdate, String role,
-        boolean emailVerified, int loginFailureCount, LocalDateTime passwordChangeDatetime,
-        LocalDateTime lastLoginDatetime, LocalDateTime accountCreatedDateTime,
-        LocalDateTime accountDeletedDateTime, boolean isAccountDeleted, String nickname) {
+        String nickname, UserStatus userStatus) {
         User user = new User();
         user.email = email;
         user.password = password;
         user.birthdate = birthdate;
         user.nickname = nickname;
         user.role = role;
-        user.emailVerified = emailVerified;
-        user.loginFailureCount = loginFailureCount;
-        user.passwordChangeDatetime = passwordChangeDatetime;
-        user.lastLoginDatetime = lastLoginDatetime;
-        user.accountCreatedDateTime = accountCreatedDateTime;
-        user.accountDeletedDateTime = accountDeletedDateTime;
-        user.isAccountDeleted = isAccountDeleted;
+        user.userStatus = userStatus;
         return user;
+    }
+
+    public void addPost(Post post) {
+        posts.add(post);
+        post.setUser(this);
+    }
+
+    public void removePost(Post post) {
+        posts.remove(post);
+        post.setUser(null);
     }
 }
