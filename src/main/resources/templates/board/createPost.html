@@ -61,7 +61,7 @@
                         <img th:src="@{/images/person.svg}" alt="person" class="icon"/>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownUserMenu">
-                        <span class="dropdown-item-text" th:text="${session.nickname}">닉네임</span>
+                        <span class="dropdown-item-text" th:text="${loginUser.nickname}">닉네임</span>
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="/user/profile">마이페이지</a>
                         <a class="dropdown-item" href="#" id="logout-link">로그아웃</a>
@@ -81,7 +81,9 @@
     <div class="row">
         <div class="col-12">
             <h2>글 작성</h2>
-            <form id="write-form" method="post" enctype="multipart/form-data">
+            <form id="write-form">
+                <input type="hidden" id="board" name="board" value="">
+                <input type="hidden" id="email" name="email" th:value="${loginUser.email}">
                 <div class="form-group">
                     <label for="title">제목</label>
                     <input type="text" class="form-control" id="title" name="title" placeholder="제목을 입력하세요" required>
@@ -89,13 +91,8 @@
                 <div class="form-group">
                     <label for="content">내용</label>
                     <div id="content" class="editable-content" contenteditable="true"></div>
-                    <textarea id="hidden-content" name="content" style="display:none;"></textarea>
                 </div>
-                <div class="form-group">
-                    <label for="file">파일 업로드</label>
-                    <input type="file" class="form-control-file" id="file" name="file">
-                </div>
-                <button type="submit" class="btn btn-primary">작성</button>
+                <button type="button" class="btn btn-primary" onclick="submitForm()">작성</button>
             </form>
         </div>
     </div>
@@ -112,10 +109,58 @@
     document.addEventListener("DOMContentLoaded", function () {
         const urlParams = new URLSearchParams(window.location.search);
         const board = urlParams.get('board');
+        document.getElementById('board').value = board;
 
-        const form = document.getElementById('write-form');
-        form.action = `/board/${board}/createPost`;
+        document.getElementById('write-form').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const title = document.getElementById('title').value.trim();
+            const content = document.getElementById('content').innerText.trim();
+
+            if (title.length < 2) {
+                alert('제목은 최소 2글자 이상이어야 합니다.');
+                return false;
+            }
+
+            if (content.length < 1) {
+                alert('내용은 최소 1글자 이상이어야 합니다.');
+                return false;
+            }
+
+            submitForm();
+        });
     });
+
+    function submitForm() {
+        const board = document.getElementById('board').value;
+        const title = document.getElementById('title').value;
+        const content = document.getElementById('content').innerHTML;
+        const email = document.getElementById('email').value;
+
+        const formData = new URLSearchParams();
+        formData.append('board', board);
+        formData.append('title', title);
+        formData.append('content', content);
+        formData.append('email', email);
+
+        fetch(`/board/createPost`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: formData.toString()
+        })
+        .then(response => {
+            if (response.ok) {
+                window.location.href = `/board/${board}`;
+            } else {
+                alert('Error: ' + response.statusText);
+            }
+        })
+        .catch(error => {
+            alert('Error: ' + error.message);
+        });
+    }
 </script>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

@@ -2,65 +2,97 @@ package com.sportsLog.sportsLog.controller.board;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
+import com.sportsLog.sportsLog.common.SessionConst;
+import com.sportsLog.sportsLog.dto.post.AddPostRequestDto;
+import com.sportsLog.sportsLog.entity.User;
+import com.sportsLog.sportsLog.repository.UserRepository;
+import com.sportsLog.sportsLog.service.post.PostService;
+
+import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 @Controller
 @RequestMapping("/board")
+@RequiredArgsConstructor
+@Slf4j
 public class BoardController {
 
-    @GetMapping("/baseball")
-    public String baseballBoard() {
-        return "/board/baseball";
-    }
+	// TODO: 로그인 안했을 때, 게시글 쓰기 불허
+	// TODO: PostController 분리
 
-    @GetMapping("/basketball")
-    public String basketballBoard() {
-        return "/board/basketball";
-    }
+	private final PostService postService;
+	private final UserRepository userRepository;
 
-    @GetMapping("/soccer")
-    public String soccerBoard() {
-        return "/board/soccer";
-    }
+	private ModelAndView addSessionUserToModel(HttpSession session, String viewName) {
+		ModelAndView modelAndView = new ModelAndView(viewName);
+		String loginEmail = (String) session.getAttribute(SessionConst.LOGIN_EMAIL);
+		if (loginEmail != null) {
+			User loginUser = userRepository.findByEmail(loginEmail).orElse(null);
+			modelAndView.addObject("loginUser", loginUser);
+		}
+		return modelAndView;
+	}
 
-    @GetMapping("/americanFootball")
-    public String americanFootballBoard() {
-        return "/board/americanFootball";
-    }
+	@GetMapping("/baseball")
+	public ModelAndView baseballBoard(HttpSession session) {
+		return addSessionUserToModel(session, "/board/baseball");
+	}
 
-    @GetMapping("/mma")
-    public String mmaBoard() {
-        return "/board/mma";
-    }
+	@GetMapping("/basketball")
+	public ModelAndView basketballBoard(HttpSession session) {
+		return addSessionUserToModel(session, "/board/basketball");
+	}
 
-    @GetMapping("/boxing")
-    public String boxingBoard() {
-        return "/board/boxing";
-    }
+	@GetMapping("/soccer")
+	public ModelAndView soccerBoard(HttpSession session) {
+		return addSessionUserToModel(session, "/board/soccer");
+	}
 
-    @GetMapping("/createPost")
-    public ModelAndView createPost(@RequestParam("board") String board) {
-        ModelAndView mav = new ModelAndView("/board/createPost");
-        mav.addObject("board", board);
-        return mav;
-    }
+	@GetMapping("/americanFootball")
+	public ModelAndView americanFootballBoard(HttpSession session) {
+		return addSessionUserToModel(session, "/board/americanFootball");
+	}
 
-    // TODO: JSON으로 수정
-    @PostMapping("/{board}/createPost")
-    public RedirectView createPost(@PathVariable("board") String board,
-        @RequestParam("title") String title,
-        @RequestParam("content") String content,
-        @RequestParam(value = "file", required = false) MultipartFile file) {
-        // 게시글 저장 로직 추가 (예: 서비스 호출)
+	@GetMapping("/mma")
+	public ModelAndView mmaBoard(HttpSession session) {
+		return addSessionUserToModel(session, "/board/mma");
+	}
 
-        // 게시글 저장 후 해당 게시판 페이지로 리디렉션
-        return new RedirectView("/board/" + board);
-    }
+	@GetMapping("/boxing")
+	public ModelAndView boxingBoard(HttpSession session) {
+		return addSessionUserToModel(session, "/board/boxing");
+	}
+
+	@GetMapping("/createPost")
+	public ModelAndView createPost(@RequestParam("board") String board, HttpSession session) {
+		ModelAndView mav = addSessionUserToModel(session, "/board/createPost");
+		mav.addObject("board", board);
+		return mav;
+	}
+
+	@PostMapping("/createPost")
+	public RedirectView createPost(@RequestParam("board") String board,
+		@RequestParam("title") String title,
+		@RequestParam("content") String content,
+		@RequestParam("email") String email) {
+		log.info("createPost 호출완료");
+
+		AddPostRequestDto addPostRequestDto = new AddPostRequestDto();
+		addPostRequestDto.setBoard(board);
+		addPostRequestDto.setTitle(title);
+		addPostRequestDto.setContent(content);
+		addPostRequestDto.setEmail(email);
+		log.info("email: {} ", addPostRequestDto.getEmail());
+
+		postService.savePost(addPostRequestDto);
+
+		return new RedirectView("/board/" + board);
+	}
 }
-

@@ -1,6 +1,5 @@
 package com.sportsLog.sportsLog.entity;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import org.springframework.data.annotation.CreatedDate;
@@ -14,6 +13,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -35,13 +35,11 @@ public class Post {
 
 	private String board;
 
-	private String filePath;
-
 	@CreatedDate
 	private LocalDateTime createdDate;
 
 	@LastModifiedDate
-	private LocalDate modifiedDate;
+	private LocalDateTime modifiedDate;
 
 	private boolean deleted = false;
 
@@ -49,7 +47,17 @@ public class Post {
 	@JoinColumn(name = "user_id")
 	private User user;
 
-	public void delete() {
+	@Builder
+	public Post(String title, String content, String board, User user) {
+		this.title = title;
+		this.content = content;
+		this.board = board;
+		this.user = user;
+		this.createdDate = LocalDateTime.now();
+		this.modifiedDate = LocalDateTime.now();
+	}
+
+	public void deletePost() {
 		this.deleted = true;
 	}
 }

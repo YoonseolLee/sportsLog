@@ -6,9 +6,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class AddPostRequestDto {
-
+	private String board;
 	private String title;
 	private String content;
-	private String board;
-	private String filePath;
+	private String email;
 }
