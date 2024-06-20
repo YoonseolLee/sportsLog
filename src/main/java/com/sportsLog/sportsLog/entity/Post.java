@@ -43,11 +43,15 @@ public class Post {
 
 	private int views;
 	private int likes;
-	private String board;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "board_id")
+	private Board board;
+
 	private boolean deleted = false;
 
 	@Builder
-	public Post(String title, String content, User user, int views, int likes, String board)  {
+	public Post(String title, String content, User user, int views, int likes, Board board)  {
 		this.title = title;
 		this.content = content;
 		this.user = user;
