@@ -1,5 +1,7 @@
 package com.sportsLog.sportsLog.service.post;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.sportsLog.sportsLog.dto.post.AddPostRequestDto;
@@ -28,10 +30,17 @@ public class PostService {
 		Post post = Post.builder()
 			.title(addPostRequestDto.getTitle())
 			.content(addPostRequestDto.getContent())
-			.board(addPostRequestDto.getBoard())
 			.user(user)
+			.views(0)
+			.likes(0)
+			.board(addPostRequestDto.getBoard())
 			.build();
+
 		user.addPost(post);
 		postRepository.save(post);
+	}
+
+	public List<Post> findPostsByBoard(String board) {
+		return postRepository.findByBoard(board);
 	}
 }

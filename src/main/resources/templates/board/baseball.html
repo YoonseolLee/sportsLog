@@ -87,19 +87,19 @@
                     <th scope="col">작성자</th>
                     <th scope="col">작성일</th>
                     <th scope="col">조회수</th>
-                    <th scope="col">추천</th>
+                    <th scope="col">좋아요</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr th:each="post : ${posts}">
-                    <th scope="row" th:text="${post.id}">1</th>
+                    <th scope="row" th:text="${post.id}"></th>
                     <td>
                         <a th:href="@{/board/baseball/{id}(id=${post.id})}" th:text="${post.title}">게시글 제목</a>
                     </td>
-                    <td th:text="${post.author}">작성자</td>
-                    <td th:text="${#dates.format(post.date, 'yyyy-MM-dd')}">2024-01-01</td>
-                    <td th:text="${post.views}">100</td>
-                    <td th:text="${post.recommendations}">10</td>
+                    <td th:text="${post.user.nickname}">작성자</td>
+                    <td th:text="${#temporals.format(post.createdDate, 'yyyy-MM-dd')}"></td>
+                    <td th:text="${post.views}"></td>
+                    <td th:text="${post.likes}"></td>
                 </tr>
                 </tbody>
             </table>
@@ -136,7 +136,7 @@
             </nav>
         </div>
         <div class="col-auto">
-            <button type="button" class="btn btn-primary" onclick="location.href='/board/createPost?board=baseball'">글쓰기</button>
+            <button type="button" class="btn btn-primary" onclick="location.href='/post/create?board=baseball'">글쓰기</button>
         </div>
     </div>
 </main>
