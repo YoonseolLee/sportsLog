@@ -2,10 +2,10 @@ package com.sportsLog.sportsLog.entity;
 
 import java.time.LocalDateTime;
 
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
+import com.sportsLog.sportsLog.entity.listener.PostEntityListener;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -22,6 +22,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @Entity
+@EntityListeners(PostEntityListener.class)
 public class Post {
 
 	@Id
@@ -33,28 +34,26 @@ public class Post {
 	@Lob
 	private String content;
 
-	private String board;
-
-	@CreatedDate
-	private LocalDateTime createdDate;
-
-	@LastModifiedDate
-	private LocalDateTime modifiedDate;
-
-	private boolean deleted = false;
-
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
 	private User user;
 
+	private LocalDateTime createdDate;
+	private LocalDateTime modifiedDate;
+
+	private int views;
+	private int likes;
+	private String board;
+	private boolean deleted = false;
+
 	@Builder
-	public Post(String title, String content, String board, User user) {
+	public Post(String title, String content, User user, int views, int likes, String board)  {
 		this.title = title;
 		this.content = content;
-		this.board = board;
 		this.user = user;
-		this.createdDate = LocalDateTime.now();
-		this.modifiedDate = LocalDateTime.now();
+		this.views = views;
+		this.likes = likes;
+		this.board = board;
 	}
 
 	public void deletePost() {
