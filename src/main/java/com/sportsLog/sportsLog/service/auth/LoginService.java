@@ -35,6 +35,6 @@ public class LoginService {
 	public void createSession(User user, HttpServletRequest request) {
 		HttpSession session = request.getSession(true);
 		session.setAttribute(SessionConst.LOGIN_EMAIL, user.getEmail());
-		session.setAttribute("nickname", user.getNickname());
+		session.setAttribute(SessionConst.LOGIN_NICKNAME, user.getNickname());
 	}
 }
