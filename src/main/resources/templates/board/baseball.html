@@ -62,7 +62,10 @@
                         <span class="dropdown-item-text" th:text="${loginUser.nickname}">닉네임</span>
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="/user/profile">마이페이지</a>
-                        <a class="dropdown-item" href="#" id="logout-link">로그아웃</a>
+                        <form th:action="@{/auth/logout}" method="post" class="dropdown-item">
+                            <input type="hidden" name="redirectUrl" th:value="${#httpServletRequest.requestURI}">
+                            <button type="submit" class="btn btn-link" id="logout-link" style="padding: 0; color: inherit; text-align: left;">로그아웃</button>
+                        </form>
                     </div>
                 </li>
                 <li class="nav-item" th:if="${loginUser == null}">

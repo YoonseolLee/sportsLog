@@ -1,10 +1,9 @@
 package com.sportsLog.sportsLog.controller.auth;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.sportsLog.sportsLog.service.auth.LogoutService;
 
@@ -22,9 +21,9 @@ public class LogoutController {
 	private final LogoutService logoutService;
 
 	@PostMapping("/logout")
-	public ResponseEntity<Void> logout(HttpServletRequest request) {
+	public String logout(HttpServletRequest request, @RequestParam String redirectUrl) {
 		HttpSession session = request.getSession(false);
 		logoutService.logout(session);
-		return ResponseEntity.status(HttpStatus.OK).build();
+		return "redirect:" + redirectUrl;
 	}
 }

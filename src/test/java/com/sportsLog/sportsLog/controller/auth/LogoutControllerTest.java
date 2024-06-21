@@ -3,62 +3,57 @@ package com.sportsLog.sportsLog.controller.auth;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpSession;
 
 import com.sportsLog.sportsLog.exception.LogoutFailedException;
 import com.sportsLog.sportsLog.service.auth.LogoutService;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class LogoutControllerTest {
 
-	@Autowired
+	@InjectMocks
 	private LogoutController logoutController;
 
-	@MockBean
+	@Mock
 	private LogoutService logoutService;
 
-	private MockHttpServletRequest request;
-	private MockHttpSession session;
-
-	@BeforeEach
-	void setUp() {
-		request = new MockHttpServletRequest();
-		session = new MockHttpSession();
-	}
-
 	@Test
-	void testLogoutSuccessful() {
+	void logout_ValidSession_ShouldRedirectToSpecifiedUrl() {
 		// given
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		MockHttpSession session = new MockHttpSession();
 		request.setSession(session);
+		String redirectUrl = "/main";
 
 		// when
-		ResponseEntity<Void> response = logoutController.logout(request);
+		String result = logoutController.logout(request, redirectUrl);
 
 		// then
-		assertEquals(HttpStatus.OK, response.getStatusCode());
 		verify(logoutService, times(1)).logout(session);
+		assertEquals("redirect:/main", result);
 	}
 
 	@Test
-	void testLogoutFailedWithNoSession() {
+	void logout_SessionIsNull_ShouldThrowLogoutFailedException() {
 		// given
-		request.setSession(null);
-		doThrow(new LogoutFailedException("세션이 존재하지 않습니다.")).when(logoutService).logout(null);
+		// session을 request에 넣지 않아서 자동으로 null이 입력됨
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		String redirectUrl = "/main";
 
-		// when / then
-		LogoutFailedException exception = assertThrows(LogoutFailedException.class, () -> {
-			logoutController.logout(request);
+		doThrow(new LogoutFailedException("세션이 존재하지 않습니다."))
+			.when(logoutService).logout(null);
+
+		// when, then
+		assertThrows(LogoutFailedException.class, () -> {
+			logoutController.logout(request, redirectUrl);
 		});
 
-		assertEquals("세션이 존재하지 않습니다.", exception.getMessage());
 		verify(logoutService, times(1)).logout(null);
 	}
 }
