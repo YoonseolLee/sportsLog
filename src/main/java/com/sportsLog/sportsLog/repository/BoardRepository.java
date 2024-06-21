@@ -18,4 +18,12 @@ public class BoardRepository {
 	public void save(Board board) {
 		em.persist(board);
 	}
+
+	public boolean existsByName(String name) {
+		String jpql = "SELECT COUNT(b) FROM Board b WHERE b.name = :name";
+		Long count = em.createQuery(jpql, Long.class)
+			.setParameter("name", name)
+			.getSingleResult();
+		return count > 0;
+	}
 }

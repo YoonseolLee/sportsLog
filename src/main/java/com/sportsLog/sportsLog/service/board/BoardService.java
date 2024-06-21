@@ -17,7 +17,9 @@ public class BoardService {
 
 	@Transactional
 	public void saveBoard(AddBoardRequestDto addBoardRequestDto) {
-		// validate board 추가 예정
+		if (isBoardNameDuplicate(addBoardRequestDto.getName())) {
+			throw new IllegalArgumentException("이미 존재하는 게시판입니다.");
+		}
 
 		Board board = Board.builder()
 			.name(addBoardRequestDto.getName())
@@ -25,5 +27,9 @@ public class BoardService {
 			.build();
 
 		boardRepository.save(board);
+	}
+
+	private boolean isBoardNameDuplicate(String name) {
+		return boardRepository.existsByName(name);
 	}
 }
