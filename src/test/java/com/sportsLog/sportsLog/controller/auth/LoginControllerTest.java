@@ -27,6 +27,8 @@ import com.sportsLog.sportsLog.service.auth.LoginService;
 @WebMvcTest(LoginController.class)
 class LoginControllerTest {
 
+	// TODO: 에러발생.. 수정 필요!!
+
 	@Autowired
 	private MockMvc mockMvc;
 
