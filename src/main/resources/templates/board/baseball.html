@@ -14,6 +14,19 @@
         .pagination-container nav {
             margin-right: 200px;
         }
+        .table th, .table td {
+            white-space: nowrap;
+            text-align: center;
+        }
+        .table th.title, .table td.title {
+            width: 60%;
+            white-space: normal;
+            word-wrap: break-word;
+            text-align: left;
+        }
+        .table th, .table td {
+            width: 10%;
+        }
     </style>
 </head>
 <body>
@@ -86,23 +99,19 @@
                 <thead class="thead-light">
                 <tr>
                     <th scope="col">번호</th>
-                    <th scope="col">제목</th>
+                    <th scope="col" class="title">제목</th>
                     <th scope="col">작성자</th>
                     <th scope="col">작성일</th>
-                    <th scope="col">조회수</th>
-                    <th scope="col">좋아요</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr th:each="post : ${posts}">
                     <th scope="row" th:text="${post.id}"></th>
-                    <td>
+                    <td class="title">
                         <a th:href="@{/board/baseball/{id}(id=${post.id})}" th:text="${post.title}">게시글 제목</a>
                     </td>
                     <td th:text="${post.user.nickname}">작성자</td>
                     <td th:text="${#temporals.format(post.createdDate, 'yyyy-MM-dd')}"></td>
-                    <td th:text="${post.views}"></td>
-                    <td th:text="${post.likes}"></td>
                 </tr>
                 </tbody>
             </table>
