@@ -27,6 +27,13 @@ public class GlobalExceptionHandler {
 		return errorResult;
 	}
 
+	@ExceptionHandler(BoardException.class)
+	public ResponseEntity<Map<String, String>> handleBoardException(BoardException ex) {
+		Map<String, String> errors = new HashMap<>();
+		errors.put("board exception", ex.getMessage());
+		return ResponseEntity.badRequest().body(errors);
+	}
+
 	@ExceptionHandler(LoginFailedException.class)
 	public ResponseEntity<Map<String, String>> handleLoginFailedException(LoginFailedException ex) {
 		Map<String, String> errors = new HashMap<>();

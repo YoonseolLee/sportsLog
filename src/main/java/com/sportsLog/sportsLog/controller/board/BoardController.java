@@ -12,12 +12,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.sportsLog.sportsLog.common.SessionConst;
 import com.sportsLog.sportsLog.dto.board.AddBoardRequestDto;
+import com.sportsLog.sportsLog.entity.Board;
 import com.sportsLog.sportsLog.entity.Post;
 import com.sportsLog.sportsLog.entity.User;
+import com.sportsLog.sportsLog.exception.BoardException;
 import com.sportsLog.sportsLog.repository.UserRepository;
 import com.sportsLog.sportsLog.service.board.BoardService;
 import com.sportsLog.sportsLog.service.post.PostService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,15 +43,22 @@ public class BoardController {
 		return null;
 	}
 
-	@GetMapping("/{board}")
-	public String viewBoard(@PathVariable String board, HttpSession session, Model model) {
+	@GetMapping("/{boardName}")
+	public String viewBoard(@PathVariable String boardName, HttpSession session, Model model, HttpServletRequest request) {
 		User loginUser = addSessionUserToModel(session);
 		model.addAttribute("loginUser", loginUser);
+
+		Board board = boardService.findByName(boardName);
+		if (board == null) {
+			throw new BoardException("유효하지 않은 게시판입니다.");
+		}
 
 		List<Post> posts = postService.findPostsByBoard(board);
 		model.addAttribute("posts", posts);
 
-		return "/board/" + board;
+		model.addAttribute("requestURI", request.getRequestURI());
+
+		return "/board/" + boardName;
 	}
 
 	@PostMapping("/create")

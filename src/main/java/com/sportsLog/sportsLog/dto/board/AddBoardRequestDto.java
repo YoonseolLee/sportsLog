@@ -1,5 +1,7 @@
 package com.sportsLog.sportsLog.dto.board;
 
+import com.sportsLog.sportsLog.common.BoardStatus;
+
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -15,4 +17,7 @@ public class AddBoardRequestDto {
 
 	@Size(max = 100, message = "게시판 설명은 100자 이하여야 합니다.")
 	private String description;
+
+	@NotNull(message = "게시판 상태는 필수 입력값입니다.")
+	private BoardStatus status;
 }

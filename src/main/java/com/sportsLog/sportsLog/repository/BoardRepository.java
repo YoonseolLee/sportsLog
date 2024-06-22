@@ -1,10 +1,13 @@
 package com.sportsLog.sportsLog.repository;
 
+import java.util.Optional;
+
 import org.springframework.stereotype.Repository;
 
 import com.sportsLog.sportsLog.entity.Board;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 
@@ -19,11 +22,13 @@ public class BoardRepository {
 		em.persist(board);
 	}
 
-	public boolean existsByName(String name) {
-		String jpql = "SELECT COUNT(b) FROM Board b WHERE b.name = :name";
-		Long count = em.createQuery(jpql, Long.class)
-			.setParameter("name", name)
-			.getSingleResult();
-		return count > 0;
+	public Optional<Board> findByName(String name) {
+		try {
+			return Optional.of(em.createQuery("SELECT b FROM Board b WHERE b.name = :name", Board.class)
+				.setParameter("name", name)
+				.getSingleResult());
+		} catch (NoResultException e) {
+			return Optional.empty();
+		}
 	}
 }
