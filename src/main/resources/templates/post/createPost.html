@@ -82,7 +82,7 @@
         <div class="col-12">
             <h2>글 작성</h2>
             <form id="write-form">
-                <input type="hidden" id="board" name="board" value="">
+                <input type="hidden" id="board" name="board" th:value="${board}">
                 <input type="hidden" id="email" name="email" th:value="${loginUser.email}">
                 <div class="form-group">
                     <label for="title">제목</label>
@@ -117,13 +117,13 @@
             const title = document.getElementById('title').value.trim();
             const content = document.getElementById('content').innerText.trim();
 
-            if (title.length < 2) {
-                alert('제목은 최소 2글자 이상이어야 합니다.');
+            if (title.length < 1 || title.length > 100) {
+                alert('제목은 최소 1자, 최대 100자 입력할 수 있습니다.');
                 return false;
             }
 
-            if (content.length < 1) {
-                alert('내용은 최소 1글자 이상이어야 합니다.');
+            if (content.length < 2 || content.length > 10000) {
+                alert('내용은 최소 2자, 최대 10,000자 입력할 수 있습니다.');
                 return false;
             }
 

@@ -29,14 +29,14 @@ public class Post {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id")
+	private User user;
+
 	private String title;
 
 	@Lob
 	private String content;
-
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "user_id")
-	private User user;
 
 	private LocalDateTime createdDate;
 	private LocalDateTime modifiedDate;
@@ -51,7 +51,7 @@ public class Post {
 	private boolean deleted = false;
 
 	@Builder
-	public Post(String title, String content, User user, int views, int likes, Board board)  {
+	public Post(String title, String content, User user, int views, int likes, Board board) {
 		this.title = title;
 		this.content = content;
 		this.user = user;

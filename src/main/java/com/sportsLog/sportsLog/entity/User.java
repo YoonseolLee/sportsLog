@@ -63,13 +63,17 @@ public class User {
         return user;
     }
 
-    public void addPost(Post post) {
+    public void addPost(Post post, Board board) {
         posts.add(post);
         post.setUser(this);
+        post.setBoard(board);
+        board.incrementPostCount();
     }
 
-    public void removePost(Post post) {
+    public void removePost(Post post, Board board) {
         posts.remove(post);
         post.setUser(null);
+        post.setBoard(null);
+        board.decrementPostCount();
     }
 }
