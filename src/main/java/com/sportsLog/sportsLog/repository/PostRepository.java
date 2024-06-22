@@ -10,7 +10,6 @@ import com.sportsLog.sportsLog.entity.Post;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
-import jakarta.transaction.Transactional;
 
 @Repository
 public class PostRepository {
@@ -18,7 +17,6 @@ public class PostRepository {
 	@PersistenceContext
 	private EntityManager em;
 
-	@Transactional
 	public void save(Post post) {
 		em.persist(post);
 	}

@@ -29,7 +29,7 @@ public class PostController {
 	private final PostService postService;
 	private final UserRepository userRepository;
 
-	private User addSessionUserToModel(HttpSession session) {
+	private User getSessionUser(HttpSession session) {
 		String loginEmail = (String)session.getAttribute(SessionConst.LOGIN_EMAIL);
 		if (loginEmail != null) {
 			return userRepository.findByEmail(loginEmail).orElse(null);
@@ -39,7 +39,7 @@ public class PostController {
 
 	@GetMapping("/create")
 	public String createPostForm(@RequestParam("board") String board, HttpSession session, Model model) {
-		User loginUser = addSessionUserToModel(session);
+		User loginUser = getSessionUser(session);
 
 		if (loginUser == null) {
 			// 로그인되지 않은 상태라면 로그인 페이지로 리다이렉트
