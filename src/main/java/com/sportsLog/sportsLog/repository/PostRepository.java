@@ -22,7 +22,7 @@ public class PostRepository {
 	}
 
 	public List<Post> findByBoard(Board board) {
-		TypedQuery<Post> query = em.createQuery("SELECT p FROM Post p WHERE p.board = :board", Post.class);
+		TypedQuery<Post> query = em.createQuery("SELECT p FROM Post p WHERE p.board = :board ORDER BY p.createdDate DESC", Post.class);
 		query.setParameter("board", board);
 		return query.getResultList();
 	}
