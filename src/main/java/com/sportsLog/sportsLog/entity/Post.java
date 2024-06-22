@@ -59,8 +59,4 @@ public class Post {
 		this.likes = likes;
 		this.board = board;
 	}
-
-	public void deletePost() {
-		this.deleted = true;
-	}
 }

@@ -5,10 +5,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.sportsLog.sportsLog.common.BoardStatus;
+import com.sportsLog.sportsLog.entity.listener.BoardEntityListener;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
@@ -26,7 +28,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @Entity
-// TODO: Post entity Listner 등록
+@EntityListeners(BoardEntityListener.class)
 public class Board {
 
 	@Id
@@ -79,7 +81,9 @@ public class Board {
 	}
 
 	public void decrementPostCount() {
-		this.postCount--;
+		if (this.postCount > 0) {
+			this.postCount--;
+		}
 	}
 }
 
